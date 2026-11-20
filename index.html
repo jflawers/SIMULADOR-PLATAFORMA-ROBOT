@@ -1,0 +1,1982 @@
+
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0e1620">
+<title>SPINMASTER PRO · 1.4</title>
+<style>
+:root{--bg:#0e1620;--card:#1a2534;--card2:#223247;--line:#2c3e55;--tx:#eef4fb;--mut:#9fb0c4;--green:#2ecc71;--red:#ff5a5f;--amber:#f5a623;--blue:#4da3ff}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.35 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{padding-bottom:0}
+.top{position:fixed;top:0;left:0;right:0;z-index:5;display:flex;gap:6px;align-items:center;flex-wrap:wrap;padding:6px 10px;background:#121d2a;border-bottom:1px solid var(--line)}
+.chip{font-weight:800;padding:6px 12px;border-radius:999px;background:#4b5563;font-size:15px;color:#fff}
+.chip.acc{background:var(--amber);color:#1a1200}
+.chip.ready{background:var(--green);color:#03150b}
+.chip.fire{background:#1fbf75;color:#03150b}
+.chip.alarm{background:var(--red);color:#fff}
+.chip.off{background:#4b5563}
+.stat{font-size:15px;color:var(--mut)} .stat b{color:var(--tx)}
+.ind{font-size:13px;padding:4px 8px;border-radius:8px;background:var(--card2);color:var(--mut)}
+.ind.ok{color:#bff5d4}
+.banner{margin:10px 12px 0;padding:12px;border-radius:14px;background:#3a1719;border:2px solid var(--red);color:#ffe1e3;font-weight:700}
+.banner small{display:block;font-weight:400;margin-top:4px;color:#ffd0d3}
+main{padding:12px}
+.view[hidden],[hidden]{display:none!important}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:12px}
+.center{text-align:center}
+.h{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin:0 0 10px;font-weight:700}
+.title{font-size:24px;font-weight:800;margin:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.btn{min-height:52px;border:0;border-radius:14px;background:var(--card2);color:var(--tx);font:700 17px system-ui;padding:10px 12px;cursor:pointer}
+.btn.sel{outline:3px solid var(--blue);background:#1d3350}
+.btn.go{background:var(--green);color:#03150b}
+.btn.bad{background:var(--red);color:#fff}
+.btn.alt{background:#6d4fd6;color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.big{min-height:120px;font-size:44px;font-weight:900;border-radius:26px}
+.btn.wide{width:100%}
+.btn.sm{min-height:44px;font-size:15px;padding:8px 10px}
+input[type=range]{width:100%;height:36px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.val{font-size:26px;font-weight:800}
+.mut{color:var(--mut);font-size:14px}
+.mesa{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;background:#0d2a4a;border:2px solid #cfe3ff;border-radius:14px;padding:6px}
+.zone{min-height:76px;border-radius:10px;background:#1f4f86;border:0;color:#fff;font:800 16px system-ui;padding:6px;display:flex;align-items:flex-end;justify-content:center}
+.zone.sel{outline:3px solid #ffd166}
+.stepper{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:8px 0;width:100%}
+.tbtn{min-height:50px;font-size:17px;font-weight:800;padding:8px 2px;min-width:0;width:100%}
+.dock{position:fixed;left:0;right:0;bottom:0;background:#0b121b;border-top:1px solid var(--line);padding:8px 10px calc(8px + env(safe-area-inset-bottom));z-index:10}
+.ctx{flex-basis:100%;font-size:12px;color:var(--mut,#9fb0c6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}   /* 4.1 */
+.stop{width:100%;min-height:60px;border:0;border-radius:16px;background:var(--red);color:#fff;font:900 22px system-ui;letter-spacing:.04em;cursor:pointer}
+.tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;margin-top:6px}
+.tabs button{min-height:40px;border:0;border-radius:10px;background:transparent;color:var(--mut);font:700 12px system-ui;cursor:pointer;padding:2px}
+.dockrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dockrow .stop{min-height:50px;font-size:17px}
+#dock-roll{min-height:50px;font-size:16px;font-weight:800;border-radius:16px}
+.tabs button.on{color:var(--blue);background:#15263d}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.step{display:grid;grid-template-columns:64px 1fr 64px;align-items:center;gap:10px;margin:10px 0}
+.step .btn{min-height:56px;font-size:24px}
+.item{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:10px}
+.item .t{font-weight:800;font-size:18px}
+.tag{font-size:12px;background:#2a3a52;border-radius:6px;padding:2px 6px;margin-left:6px;color:#ffd166}
+.bar{height:12px;background:#33415a;border-radius:999px;overflow:hidden;margin-top:10px}
+.bar i{display:block;height:100%;width:0;background:var(--blue);transition:width .3s}
+input.txt,select{width:100%;min-height:50px;font-size:18px;border-radius:12px;border:1px solid var(--line);background:#0e1826;color:var(--tx);padding:8px 10px}
+.switch{position:relative;width:60px;height:34px;border-radius:999px;background:#3b4b63;border:0;flex:none;cursor:pointer}
+.switch::after{content:"";position:absolute;top:4px;left:4px;width:26px;height:26px;border-radius:50%;background:#fff;transition:.15s}
+.switch.on{background:var(--green)}
+.switch.on::after{left:30px}
+.switch:disabled{opacity:.4;cursor:not-allowed}
+.note{font-size:13px;color:var(--amber);margin-top:6px}
+details summary{cursor:pointer;color:var(--mut);padding:8px 0}
+#toast{position:fixed;left:12px;right:12px;bottom:150px;background:#263447;color:#fff;padding:12px;border-radius:12px;text-align:center;opacity:0;transition:opacity .2s;pointer-events:none;z-index:20}
+#toast.show{opacity:1}
+
+@media (min-width: 900px) {
+  main{max-width:1180px;margin:0 auto;padding:16px 24px}
+  .top{padding:12px 24px}
+  .view{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+  #v-ajustes,#v-tercera,#v-libre{}
+  #v-ejercicios{display:block}
+  .dock{left:0;right:0;max-width:1180px;margin:0 auto}
+  .tabs button{font-size:15px}
+}
+.card{padding:10px 12px!important;margin-bottom:8px!important}
+.card .h{margin-bottom:6px!important}
+.btn{min-height:40px!important;font-size:15px!important;padding:8px 10px!important}
+.tbtn{min-height:40px!important;font-size:15px!important}
+.dockrow{grid-template-columns:1fr 1fr 1fr!important;gap:6px!important}
+.dockrow .btn,.dockrow .stop{min-height:46px!important;font-size:13px!important;padding:6px 4px!important}
+.tabs button{min-height:36px!important}
+</style>
+</head>
+<body>
+<header class="top">
+  <span id="chip" class="chip off">CONECTANDO</span>
+  <span class="stat">RPM <b id="rpm">0 / 0</b></span>
+  <span class="stat">Bolas <b id="bolas">0</b></span>
+  <span id="ind-wifi" class="ind">Wi-Fi</span>
+  <span id="ind-sens" class="ind">Sensor —</span>
+  <div id="ctx" class="ctx">—</div>   <!-- 4.1: tipo de bola, frecuencia y servo -->
+</header>
+<div id="banner" class="banner" hidden></div>
+<main>
+
+<section id="v-libre" class="view">
+  <div class="card"><div class="h">Tipo de tiro</div><div id="profiles"></div>   <!-- 2.10: una sola columna --></div>
+  <div class="card">
+    <div class="row"><span class="h" style="margin:0">Velocidad</span><span class="val" id="spd-v">0 %</span></div>
+    <div class="stepper" id="spd-st"></div>
+    <input type="range" id="spd" min="0" max="100" step="1" value="0" disabled aria-hidden="true">
+    <div class="row" style="margin-top:12px"><span class="h" style="margin:0">Efecto <span class="mut">backspin ↔ topspin</span></span><span class="val" id="eff-v">Sin efecto</span></div>
+    <div class="stepper" id="eff-st"></div>
+    <input type="range" id="eff" min="-3" max="3" step="0.1" value="0" disabled aria-hidden="true">
+    <p class="mut" id="tiro-real">RPM reales: —</p>
+    <p class="mut" id="tiro-aviso" style="color:var(--red)"></p>
+  </div>
+  <div class="card">
+    <div class="h">RPM por rodillo</div>
+    <div class="row"><span class="h" style="margin:0">Backspin</span><span class="val" id="rb-v">0 RPM</span></div>
+    <div class="stepper" id="rb-st"></div>
+    <div class="row" style="margin-top:10px"><span class="h" style="margin:0">Topspin</span><span class="val" id="rt-v">0 RPM</span></div>
+    <div class="stepper" id="rt-st"></div>
+    <div class="grid2" style="margin-top:8px"><button class="btn" data-act="invrot" data-m="backspin">Invertir giro backspin</button><button class="btn" data-act="invrot" data-m="topspin">Invertir giro topspin</button></div>
+    <p class="mut">Velocidad/Efecto y RPM están enlazados: el último valor que tocas es la fuente y el otro se recalcula.</p>
+  </div>
+  <div class="card">
+    <div class="h">Posición</div>
+    <div class="mesa" id="mesa"></div>
+    <div class="grid2" id="rand" style="margin-top:10px"></div>
+    <div style="margin-top:14px"><div class="h">Oscilación continua</div>
+    <div class="row"><span>Barrido del servo (rango de grados)</span><button class="btn" id="sweep-btn" data-act="sweep">Iniciar</button></div>
+    <div class="step"><button class="btn" data-act="sweepStep" data-d="-0.1">−</button><div class="center"><div class="val" id="sweep-v">4.0 s</div><div class="mut">Período de ida y vuelta</div></div><button class="btn" data-act="sweepStep" data-d="0.1">+</button></div>
+  </div>
+    <div class="row"><span>Mínimo (°)</span></div>
+    <div class="step"><button class="btn" data-act="swStep" data-k="lo" data-d="-1">−</button><input class="txt" id="sw-lo" type="number" min="3" max="177" step="1" style="max-width:110px"><button class="btn" data-act="swStep" data-k="lo" data-d="1">+</button></div>
+    <div class="row"><span>Máximo (°)</span></div>
+    <div class="step"><button class="btn" data-act="swStep" data-k="hi" data-d="-1">−</button><input class="txt" id="sw-hi" type="number" min="3" max="177" step="1" style="max-width:110px"><button class="btn" data-act="swStep" data-k="hi" data-d="1">+</button></div>
+    <button class="btn go wide" data-act="swApply">Aplicar rango</button>
+  </div>
+  <div class="card">
+    <div class="h">Ritmo entre bolas</div>
+    <div class="step">
+      <button class="btn" data-act="fs" data-d="-0.1">−</button>
+      <div class="center"><div class="val" id="fs-v">1.00 s</div><div class="mut" id="fs-m">60 bolas/min · últimas 5: —</div></div>
+      <button class="btn" data-act="fs" data-d="0.1">+</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="h">Serie</div>
+    <div class="step"><button class="btn" data-act="serieStep" data-d="-1">−</button><div class="center"><div class="val" id="serie-n">sin límite</div><div class="mut">Cantidad de bolas (0 = sin límite)</div></div><button class="btn" data-act="serieStep" data-d="1">+</button></div>
+    <button class="btn go big" id="serie-btn" data-act="serie">Lanzar serie</button>
+    <button class="btn" id="tiro-btn" data-act="launch" style="margin-top:10px">Un tiro</button>
+  </div>
+  <div class="grid2">
+    <button class="btn" id="roll-btn" data-act="roll">Encender rodillos</button>
+  </div>
+  <div class="card">
+    <div class="h">Práctica por tiempo y series</div>
+    <div class="grid2">
+      <div><label class="mut">Minutos (0 = sin límite)</label><input class="txt" id="pr-min" type="number" min="0" max="240" step="1"></div>
+      <div><label class="mut">Series</label><input class="txt" id="pr-series" type="number" min="1" max="20" step="1"></div>
+      <div><label class="mut">Bolas por serie</label><input class="txt" id="pr-balls" type="number" min="1" max="200" step="1"></div>
+      <div><label class="mut">Descanso entre series (s)</label><input class="txt" id="pr-rest" type="number" min="0" max="600" step="1"></div>
+      <div><label class="mut">Posición del servo</label><select class="txt" id="pr-pos"><option value="X" selected>Aleatorio R-C-D</option><option value="M">Ángulo aleatorio</option><option value="R">Revés</option><option value="K">Centro-derecha</option><option value="C">Centro</option><option value="Q">Centro-revés</option><option value="D">Derecha</option></select></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px"><button class="btn go" data-act="sesionStart">Iniciar</button><button class="btn" id="pr-pause" data-act="sesionPause">Pausar</button><button class="btn bad" data-act="sesionStop">Detener</button></div>
+    <div class="val" id="pr-txt" style="font-size:18px;margin-top:10px">Sin práctica activa</div>
+    <p class="mut">Usa los rodillos y el perfil actuales. Al terminar, los rodillos siguen girando.</p>
+  </div>
+  <p class="mut" id="launch-note"></p>
+</section>
+
+<section id="v-ejercicios" class="view" hidden>
+  <div class="subtabs" style="display:flex;gap:8px;margin-bottom:10px"><button class="btn sm" data-act="tab" data-tab="ejercicios">Ejercicios</button><button class="btn sm" data-act="tab" data-tab="tercera">Tercera bola</button></div>
+  <div id="ex-list">
+    <div class="row" style="margin-bottom:10px"><h2 class="title">Ejercicios</h2><button class="btn go" data-act="exnew">+ Nuevo</button></div>
+    <input class="txt" id="ex-q" placeholder="Buscar ejercicio o etiqueta">
+    <div class="grid3" style="margin:10px 0" id="ex-filters"></div>
+    <div id="ex-run"></div>
+    <div id="ex-items"></div>
+  </div>
+  <div id="ex-detail" hidden></div>
+</section>
+
+<section id="v-tercera" class="view" hidden>
+  <div class="val" id="tr-info" style="font-size:16px;margin-bottom:6px"></div>
+  <div class="subtabs" style="display:flex;gap:8px;margin-bottom:10px"><button class="btn sm" data-act="tab" data-tab="ejercicios">Ejercicios</button><button class="btn sm" data-act="tab" data-tab="tercera">Tercera bola</button></div>
+  <div class="card">
+    <div class="row"><span class="h" style="margin:0">Rodillos</span><button class="btn" id="tr-roll" data-act="roll">Encender rodillos</button></div>
+    <p class="mut">Los rodillos pueden seguir girando entre series. DETENER SERIE solo para la serie actual.</p>
+  </div>
+  <div class="card"><div class="seg" id="tr-mode"></div></div>
+  <div class="card center">
+    <div class="val" id="tr-prog" style="font-size:52px">—</div>
+    <div class="mut" id="tr-txt">Listo para lanzar</div>
+    <div class="bar"><i id="tr-bar"></i></div>
+  </div>
+  <div class="card">
+    <div class="step"><button class="btn" data-act="trstep" data-k="delay" data-d="-0.1">−</button><div class="center"><div class="val" id="tr-delay">4.0 s</div><div class="mut">Retardo hasta la 1ª bola (decimales)</div></div><button class="btn" data-act="trstep" data-k="delay" data-d="0.1">+</button></div>
+    <div class="step"><button class="btn" data-act="trstep" data-k="count" data-d="-1">−</button><div class="center"><div class="val" id="tr-count">5</div><div class="mut">Cantidad de bolas</div></div><button class="btn" data-act="trstep" data-k="count" data-d="1">+</button></div>
+    <div class="step"><button class="btn" data-act="trstep" data-k="int" data-d="-0.1">−</button><div class="center"><div class="val" id="tr-int">3.0 s</div><div class="mut">Intervalo entre bolas</div></div><button class="btn" data-act="trstep" data-k="int" data-d="0.1">+</button></div>
+    <div class="h" style="margin-top:12px">Tipo de bola</div>
+    <div id="tr-profile-wrap"></div>
+    <div class="h" style="margin-top:12px">Hacia</div>
+    <div class="grid3" id="tr-pos"></div>
+  </div>
+  <div id="tr-seq" hidden></div>
+  <button class="btn big wide" id="tr-launch" data-act="trlaunch">LANZAR</button>
+  <p class="mut" id="tr-note"></p>
+  <button class="btn bad wide" data-act="trstop" style="margin-top:10px">DETENER SERIE</button>
+</section>
+
+<section id="v-calc" class="view" hidden>
+  <div class="card" id="hoy-card"></div>
+  <div class="card">
+    <div class="h">Calculadora</div>
+    <div id="calc-form" style="margin-top:12px"></div>
+    <div class="grid2" style="margin-top:12px"><button class="btn go" data-act="calcgo">Calcular</button><button class="btn" data-act="calcusar">Usar estas RPM en el robot</button></div>
+    <div id="calc-res" class="note" style="margin-top:12px"></div>
+  </div>
+  <div class="card">
+    <div class="h">Cargar registros</div>
+    <div class="grid2">
+      <button class="btn wide" data-act="statload">Cargar desde el robot</button>
+      <button class="btn wide" data-act="statclear">Limpiar</button>
+    </div>
+    <label class="mut" style="display:block;margin-top:10px">o elige los archivos guardados (eventos y muestras)</label>
+    <input type="file" id="st-ev" accept=".csv" class="txt" style="margin-top:6px">
+    <input type="file" id="st-mu" accept=".csv" class="txt" style="margin-top:6px">
+  </div>
+  <div class="card" id="st-sum"><div class="mut center">Sin datos. Carga los registros para ver las estadísticas.</div></div>
+  <div class="card"><div class="h">Bolas acumuladas</div><canvas id="ch-acum" style="width:100%;height:180px"></canvas></div>
+  <div class="card"><div class="h">Intervalo entre disparos (s)</div><canvas id="ch-int" style="width:100%;height:180px"></canvas></div>
+  <div class="card"><div class="h">Latencia disparo → bola (ms)</div><canvas id="ch-lat" style="width:100%;height:180px"></canvas></div>
+  <div class="card"><div class="h">Velocidad de la bola (m/s)</div><canvas id="ch-vel" style="width:100%;height:180px"></canvas></div>
+  <div class="card"><div class="h">RPM reales frente a consigna</div><canvas id="ch-rpm" style="width:100%;height:220px"></canvas></div>
+</section>
+<section id="v-ajustes" class="view" hidden>
+  <div class="card"><div class="h">Diagnóstico de motores</div><div id="diag-motores"></div></div>
+  <div class="card">
+    <div class="h">Calibración del servo</div>
+    <div class="grid3" id="ang-btns"></div>
+    <p class="mut">Toca un ángulo para ajustarlo y probarlo sin lanzar.</p>
+    <div id="ang-editor" hidden></div>
+  </div>
+  <div class="card">
+    <div class="h">Perfiles de tiro (RPM)</div>
+    <p class="mut">Ajusta el backspin y el topspin de cada perfil y guarda. Se usan en Libre, Ejercicios y Tercera bola.</p>
+    <div class="row mut"><span style="flex:1">Perfil</span><span style="width:110px;text-align:center">Backspin</span><span style="width:110px;text-align:center">Topspin</span></div>
+    <div id="prof-table"></div>
+    <button class="btn wide" style="margin-top:10px" data-act="profsave">Guardar perfiles</button>
+  </div>
+  <div class="card">
+    <div class="h">Calibración de lanzamientos</div>
+    <p class="mut">Una prueba por configuración. Elige cuántas bolas y pulsa Ejecutar en la que quieras. Cada bola sale cada 2.2 s.</p>
+    <div class="row"><span>Bolas por prueba (tiros de cada prueba)</span><input class="txt" id="calib-n" type="number" min="3" max="20" step="1" value="10" style="width:90px"></div>
+    <div id="calib-tabla"></div>
+    <button class="btn wide" style="margin-top:10px" data-act="calibcsv">Descargar tabla de llenado</button>
+    <div class="val" id="calib-estado" style="margin-top:10px;font-size:16px">Sin prueba en curso</div>
+    <p class="mut">Al terminar cada prueba, descarga el Eventos CSV y usa analizar_calibracion.py con la tabla llenada.</p>
+  </div>
+  <div class="card"><div class="h">Prueba de efecto (vídeo)</div>
+    <p class="mut">6 bolas: backspin y topspin con efecto suave, medio y fuerte, a la misma velocidad (1.2 m). Pinta cada bola con cuartos blancos y negros y graba a 120–240 fps (cámara lenta). Cada bola sale cuando los rodillos llegan a la velocidad de la prueba. Las marcas EFECTO del registro dicen qué bola es.</p>
+    <button class="btn go wide" data-act="efecto" style="margin-top:8px">Iniciar prueba de efecto</button>
+    <p class="val" id="ef-txt" style="font-size:16px;margin-top:10px">Sin prueba en curso</p>
+    <button class="btn go wide" id="ef-listo" style="display:none;margin-top:8px">Lanzar bola</button>
+  </div>
+  <div class="card">
+    <div class="h">Pruebas</div>
+    <p class="mut">Elige una prueba y ejecútala. Todas dejan marcas en el registro y piden confirmación. PARAR TODO las detiene.</p>
+    <select class="txt" id="prueba-sel" style="margin-top:8px">
+      <option value="protocolo">Protocolo completo (7 pruebas de 10 bolas)</option>
+      <option value="escal">Escalones de RPM (sin bolas)</option>
+      <option value="frio">Arranque en frío y cambio de perfil</option>
+    </select>
+    <button class="btn go wide" style="margin-top:10px" data-act="prueba">Ejecutar prueba</button>
+    <div class="val" id="proto-txt" style="font-size:16px;margin-top:10px">Sin prueba en curso</div>
+  </div>
+  <div class="card">
+    <div class="h">Punto de caída por programa (grados)</div>
+    <p class="mut">Corrige la posición del servo en cada programa de oscilación: negativo = hacia la izquierda, positivo = hacia la derecha.</p>
+    <div id="off-table"></div>
+    <button class="btn wide" style="margin-top:10px" data-act="offsave">Guardar puntos de caída</button>
+  </div>
+  <div class="card">
+    <div class="h">Tabla de velocidad y efecto</div>
+    <div class="row"><span>RPM máximo (100 %)</span><input class="txt" id="cal-max" type="number" min="1000" max="6000" step="50" style="max-width:150px"></div>
+    <p class="mut">Velocidad = media geométrica de los dos rodillos. Efecto = log₂(topspin / backspin): +1 = el topspin va al doble que el backspin.</p>
+    <button class="btn wide" data-act="calsave">Guardar tabla</button>
+  </div>
+  <div class="card">
+    <div class="h">Protecciones y apagado</div>
+    <div class="row"><span>Parar si no llegan bolas</span><button class="switch" id="sw-nb" data-act="nb"></button></div>
+    <div class="row" style="margin-top:12px"><span>Alarma de rodillo (10 s)</span><button class="switch on" disabled></button></div>
+    <div class="note">Fijo en el firmware.</div>
+    <div class="row" style="margin-top:12px"><span>Apagar rodillos tras (min, 0 = nunca)</span><input class="txt" id="auto-off" type="number" min="0" max="240" step="1" style="max-width:120px"></div>
+    <button class="btn wide" style="margin-top:10px" data-act="autooff">Guardar apagado automático</button>
+  </div>
+  <div class="card">
+    <div class="h">Datos</div>
+    <div class="grid2">
+      <button class="btn wide" data-act="dlcsv" data-path="/registros/muestras.csv" data-base="muestras">Muestras CSV</button>
+      <button class="btn wide" data-act="dlcsv" data-path="/registros/eventos.csv" data-base="eventos">Eventos CSV</button>
+    </div>
+    <div class="h" style="margin-top:14px">Registros guardados en este navegador</div>
+    <p class="mut">Se copian del robot cada 5 s mientras la página está abierta. Si el robot se reinicia, lo copiado no se pierde.</p>
+    <div id="reg-guardados"></div>
+    <div class="grid2" style="margin-top:8px"><button class="btn" data-act="regborrar">Borrar copias del navegador</button></div>
+    <button class="btn wide" style="margin-top:10px;background:transparent;border:2px solid var(--red);color:#ff9ea1" data-act="clearlogs">Borrar registros</button>
+  </div>
+  <div class="card">
+    <div class="h">Red Wi-Fi</div>
+    <label class="mut">Nombre de la red</label><input class="txt" id="wf-ssid" maxlength="31" placeholder="PingPongRobot">
+    <label class="mut" style="display:block;margin-top:10px">Contraseña (8 a 63 caracteres, sin comillas)</label><input class="txt" id="wf-pass" type="password" maxlength="63" placeholder="nueva contraseña">
+    <button class="btn wide" style="margin-top:10px" data-act="wifi">Cambiar y reiniciar</button>
+    <p class="mut">Tras cambiarla, vuelve a conectarte con la nueva red.</p>
+  </div>
+  <div class="card">
+    <div class="h">Actualizar el firmware por Wi-Fi</div>
+    <p class="mut">Conecta el PC o el celular a la red del robot. En Arduino IDE: Herramientas → Puerto → Red → spinmaster-pro. Contraseña OTA: la definida en config.h.</p>
+    <div class="row"><span>Modo simulación (sin robot)</span><button class="switch" id="sw-sim" data-act="sim"></button></div>
+    <details><summary>Modo técnico (PWM, PID, giro)</summary><div id="tech" class="mut"></div></details>
+    <p class="mut" id="fw-ver">Versión: —</p>
+  </div>
+  <div class="card"><div class="h">Pruebas por componente (4.5)</div>
+    <div class="row"><label><input type="checkbox" id="tc-enc" checked> Encoder y atasco activos</label></div>
+    <div class="row"><label><input type="checkbox" id="tc-pid" checked> PID activo (sin encoder el PID se apaga)</label></div>
+    <div class="row"><span>Velocidad de prueba (%)</span><input class="txt" id="tc-pct" type="number" min="0" max="60" value="30" style="max-width:110px"></div>
+    <div class="grid2" style="margin-top:8px">
+      <button class="btn" data-act="tc" data-c="back" data-on="1">Probar backspin</button><button class="btn" data-act="tc" data-c="back" data-on="0">Parar backspin</button>
+      <button class="btn" data-act="tc" data-c="top" data-on="1">Probar topspin</button><button class="btn" data-act="tc" data-c="top" data-on="0">Parar topspin</button>
+      <button class="btn" data-act="tc" data-c="feed" data-on="1">Probar suministro</button><button class="btn" data-act="tc" data-c="feed" data-on="0">Parar suministro</button>
+      <button class="btn" data-act="tc" data-c="servo" data-on="1">Oscilar servo</button><button class="btn" data-act="tc" data-c="servo" data-on="0">Parar servo</button>
+    </div>
+    <div style="font-size:12px;color:#9fb0c6;margin-top:6px">Cada prueba funciona sola, sin arrancar los demás. El sensor de bolas se ve en la cabecera ("Sensor").</div>
+  </div>
+  <div class="card"><div class="h">Mensajes (4.8)</div><button class="btn" data-act="msgs">Ver últimos mensajes</button></div>
+</section>
+</main>
+
+<footer class="dock">
+  <div class="dockrow"><button class="stop" data-act="stop">PARAR TODO</button><button class="btn go" id="dock-roll" data-act="roll">Encender rodillos</button><button class="btn" id="dock-feed" data-act="feedrev">Suministro: adelante</button></div>
+  <nav class="tabs">
+    <button data-act="tab" data-tab="libre" data-grp="inicio" class="on">Inicio</button>
+    <button data-act="tab" data-tab="calc" data-grp="lanzamientos">Lanzamientos</button>
+    <button data-act="tab" data-tab="ejercicios" data-grp="entrenamiento">Entrenamiento</button>
+    <button data-act="tab" data-tab="ajustes" data-grp="ajustes">Ajustes</button>
+  </nav>
+</footer>
+<div id="toast"></div>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const load = (k, d) => { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (_) { return d; } };
+const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+const uid = () => 'x' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+
+const PROFILES = [
+  {id:'bs', label:'Backspin suave',    preset:'Corte suave'},
+  {id:'bf', label:'Backspin fuerte',   preset:'Corte Fuerte'},
+  {id:'ns', label:'Sin efecto suave',  preset:'Bola muerta Suave'},
+  {id:'nf', label:'Sin efecto fuerte', preset:'Bola muerta Fuerte'},
+  {id:'ts', label:'Topspin suave',     preset:'Topspin Suave'},
+  {id:'tf', label:'Topspin fuerte',    preset:'Topspin Fuerte'},
+  {id:'bc', label:'Backspin corto',    preset:'Backspin Corto'},   // 2.1
+  {id:'tc', label:'Topspin corto',     preset:'Topspin Corto'},   // 2.1
+  {id:'nc', label:'Sin efecto corto',   preset:'Sin efecto corto'},   // 2.6
+  {id:'bm', label:'Backspin medio',     preset:'Backspin medio'},
+  {id:'nm', label:'Sin efecto medio',   preset:'Sin efecto medio'},
+  {id:'tm', label:'Topspin medio',      preset:'Topspin medio'},
+  {id:'bl', label:'Backspin largo',     preset:'Backspin largo'},
+  {id:'nl', label:'Sin efecto largo',   preset:'Sin efecto largo'},
+  {id:'tl', label:'Topspin largo',      preset:'Topspin largo'},   // 2.6
+  {id:'b_mc_s', label:'Backspin muy corto 0.8 m suave', preset:'Backspin muy corto 0.8 m suave'},
+  {id:'b_mc_m', label:'Backspin muy corto 0.8 m medio', preset:'Backspin muy corto 0.8 m medio'},
+  {id:'b_mc_f', label:'Backspin muy corto 0.8 m fuerte', preset:'Backspin muy corto 0.8 m fuerte'},
+  {id:'t_mc_s', label:'Topspin muy corto 0.8 m suave', preset:'Topspin muy corto 0.8 m suave'},
+  {id:'t_mc_m', label:'Topspin muy corto 0.8 m medio', preset:'Topspin muy corto 0.8 m medio'},
+  {id:'t_mc_f', label:'Topspin muy corto 0.8 m fuerte', preset:'Topspin muy corto 0.8 m fuerte'},
+  {id:'n_mc', label:'Sin efecto muy corto 0.8 m', preset:'Sin efecto muy corto 0.8 m'},
+  {id:'b_co_s', label:'Backspin corto 1.2 m suave', preset:'Backspin corto 1.2 m suave'},
+  {id:'b_co_m', label:'Backspin corto 1.2 m medio', preset:'Backspin corto 1.2 m medio'},
+  {id:'b_co_f', label:'Backspin corto 1.2 m fuerte', preset:'Backspin corto 1.2 m fuerte'},
+  {id:'t_co_s', label:'Topspin corto 1.2 m suave', preset:'Topspin corto 1.2 m suave'},
+  {id:'t_co_m', label:'Topspin corto 1.2 m medio', preset:'Topspin corto 1.2 m medio'},
+  {id:'t_co_f', label:'Topspin corto 1.2 m fuerte', preset:'Topspin corto 1.2 m fuerte'},
+  {id:'n_co', label:'Sin efecto corto 1.2 m', preset:'Sin efecto corto 1.2 m'},
+  {id:'b_me_s', label:'Backspin medio 1.6 m suave', preset:'Backspin medio 1.6 m suave'},
+  {id:'b_me_m', label:'Backspin medio 1.6 m medio', preset:'Backspin medio 1.6 m medio'},
+  {id:'b_me_f', label:'Backspin medio 1.6 m fuerte', preset:'Backspin medio 1.6 m fuerte'},
+  {id:'t_me_s', label:'Topspin medio 1.6 m suave', preset:'Topspin medio 1.6 m suave'},
+  {id:'t_me_m', label:'Topspin medio 1.6 m medio', preset:'Topspin medio 1.6 m medio'},
+  {id:'t_me_f', label:'Topspin medio 1.6 m fuerte', preset:'Topspin medio 1.6 m fuerte'},
+  {id:'n_me', label:'Sin efecto medio 1.6 m', preset:'Sin efecto medio 1.6 m'},
+  {id:'b_la_s', label:'Backspin largo 2.0 m suave', preset:'Backspin largo 2.0 m suave'},
+  {id:'b_la_m', label:'Backspin largo 2.0 m medio', preset:'Backspin largo 2.0 m medio'},
+  {id:'b_la_f', label:'Backspin largo 2.0 m fuerte', preset:'Backspin largo 2.0 m fuerte'},
+  {id:'t_la_s', label:'Topspin largo 2.0 m suave', preset:'Topspin largo 2.0 m suave'},
+  {id:'t_la_m', label:'Topspin largo 2.0 m medio', preset:'Topspin largo 2.0 m medio'},
+  {id:'t_la_f', label:'Topspin largo 2.0 m fuerte', preset:'Topspin largo 2.0 m fuerte'},
+  {id:'n_la', label:'Sin efecto largo 2.0 m', preset:'Sin efecto largo 2.0 m'}];   // 2.7
+const PROF = id => PROFILES.find(p => p.id === id) || PROFILES[4];
+const POS_LABEL = {R:'Revés', C:'Centro', D:'Derecha', K:'Centro-derecha', Q:'Centro-revés', M:'Ángulo aleatorio', X:'Aleatorio R-C-D', Y:'Aleatorio derecha-revés', V:'Aleatorio revés-centro', U:'Aleatorio derecha-centro', Z:'Aleatorio 4 puntos (D-K-Q-R)'};
+const TEMPLATES = [];   // V25: las plantillas pasaron a la Biblioteca (ver LIB_DEF)
+
+const EMPTY = {robot:'DETENIDO', alarm:'', ballCount:0, sequencePending:false, train:'', trainActive:false,
+  feederSeconds:1, feederAvg:0, feederPct:0, noBallStop:true, angD:60, angC:90, angR:120, servoAngle:90, stopAt:0,
+  sensorBeam:'', exActive:false, exPaused:false, exText:'', autoOffMin:0,
+  backspin:{state:'DETENIDO', current:0, rpm:0, setpointRpm:0, direction:'REV', stalled:false},
+  topspin:{state:'DETENIDO', current:0, rpm:0, setpointRpm:0, direction:'FWD', stalled:false},
+  feeder:{state:'DETENIDO', current:0, direction:'FWD'}};
+let S = null, connected = false;
+let sim = true;   // repositorio: siempre en simulación (no hay robot conectado)
+let view = 'libre', profileId = 'ts', pos = 'C';
+let CAL = load('spm_cal', {maxRpm: 4500});
+let EX = [], exFilter = 'todos', exQuery = '', exMode = 'list', exTpl = null, EDIT = null;
+let TR = load('spm_tr2', {delay: 1.8, count: 4, int: 1.2, pos: 'X', mode: 'manual', profile: 'bs'});   // 1.25: defaults nuevos
+if (TR.mode !== 'manual' && TR.mode !== 'sec') TR.mode = 'manual';   // 1.13: solo Manual y Secuencia
+if (!TR.seq) TR.seq = [{perfil:'bs', off:1.7, nw:false}, {perfil:'ns', off:1.2, nw:true}, {perfil:'ts', off:2.1, nw:true}];
+let RUN = {abort: false, active: false, label: '', idx: 0, total: 0};
+let SERIE_N = load('spm_serie', 0);
+let SWEEP_SEG = load('spm_sweep', 4);
+let PR_LOADED = false;
+let PR = load('spm_pr', {min: 0, series: 3, balls: 10, rest: 10});
+let touched = {}, lastCount = -1, lastBallAt = 0, angEdit = null, ws = null;
+
+const online = () => sim || connected;
+const cur = () => S || EMPTY;
+const rollersRunning = s => s.backspin.state !== 'DETENIDO' || s.topspin.state !== 'DETENIDO';
+const nearSp = m => m.setpointRpm > 0 && Math.abs(m.rpm - m.setpointRpm) <= Math.max(0.03 * m.setpointRpm, 50);
+const rollersReady = s => (s && s.readyRollers !== undefined) ? !!s.readyRollers : (rollersRunning(s) && nearSp(s.backspin) && nearSp(s.topspin));   // 4.0: criterio del firmware
+const recently = k => Date.now() - (touched[k] || 0) < 1500;
+function chipInfo(X) {
+  if (!online()) return ['DESCONECTADO', 'off'];
+  if (X.alarm) return ['ALARMA', 'alarm'];
+  if (X.feeder.state !== 'DETENIDO') return ['LANZANDO', 'fire'];
+  if (/^Próxima/.test(X.train || '')) return ['DESCANSO', 'acc'];
+  if (rollersRunning(X)) return rollersReady(X) ? ['LISTO', 'ready'] : ['ACELERANDO', 'acc'];
+  return ['DETENIDO', 'off'];
+}
+
+// ---- Comunicación por WebSocket ----
+function send(o) {
+  if (sim) { simCmd(o); return; }
+  if (ws && ws.readyState === 1) ws.send(JSON.stringify(o));
+  else toast('Sin conexión con el robot');
+}
+function connect() {
+  if (sim) { connected = false; S = simState(); render(); return; }
+  try { ws = new WebSocket('ws://' + location.hostname + ':81/'); } catch (_) { setTimeout(connect, 2000); return; }
+  ws.onopen = () => { connected = true; TR_SYNC = false; send({cmd: 'state'}); render(); };   // 1.25: al reconectar vuelve a leer la configuración del robot
+  ws.onclose = () => { connected = false; render(); setTimeout(connect, 1500); };
+  ws.onmessage = e => {
+    let x; try { x = JSON.parse(e.data); } catch (_) { return; }
+    if (x.type === 'state') { S = x; render(); }
+    else if (x.type === 'error') toast(x.message);
+    else if (x.type === 'ok') confirmarOk(x.cmd);   // 1.16: el robot confirma solo lo que se aplicó
+  };
+}
+setInterval(() => { if (!sim && connected) send({cmd: 'state'}); }, 500);
+
+// ---- API de ejercicios: en el robot (REST) o simulada en el navegador ----
+const api = {
+  list: async () => sim ? load('spm_ex', []).map(e => ({id: e.id, name: e.name, fav: !!e.fav, bolas: e.balls.length}))
+                        : (await fetch('/api/ejercicios')).json(),
+  get: async id => sim ? load('spm_ex', []).find(e => e.id === id) : (await fetch('/api/ejercicios/' + id)).json(),
+  put: async ex => {
+    if (sim) { const L = load('spm_ex', []); const i = L.findIndex(e => e.id === ex.id); if (i >= 0) L[i] = ex; else L.push(ex); save('spm_ex', L); return {ok: true}; }
+    const r = await fetch('/api/ejercicios/' + ex.id, {method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(ex)});
+    return r.json();
+  },
+  del: async id => {
+    if (sim) { save('spm_ex', load('spm_ex', []).filter(e => e.id !== id)); return {ok: true}; }
+    const r = await fetch('/api/ejercicios/' + id, {method: 'DELETE'});
+    return r.json();
+  }
+};
+async function refreshEx() {
+  try { EX = await api.list(); } catch (_) { EX = []; toast('No se pudo leer la lista del robot'); }
+  if (view === 'ejercicios' && exMode === 'list') renderEx();
+}
+async function exSave(ex = EDIT.ex) {
+  if ((ex.ivGlobal ?? 0) > 0) ex.balls.forEach(b => { b.intervalo = ex.ivGlobal; });   // 2.5: intervalo global
+  const r = await api.put(ex);
+  if (r && r.error) { toast(r.error); return false; }
+  toast('Guardado en el robot');
+  await refreshEx();
+  return true;
+}
+
+// ---- Modo simulación ----
+const SIM = {pv:[{n:'Corte suave',b:4250,t:700},{n:'Corte Fuerte',b:4500,t:700},{n:'Sin efecto Suave',b:2000,t:2000},{n:'Sin efecto Fuerte',b:2750,t:2750},{n:'Topspin Suave',b:700,t:4250},{n:'Topspin Fuerte',b:700,t:4500}], stopAt:0, feedT:0, bs:0, ts:0, bsSp:0, tsSp:0, run:false, ball:0, secs:1, avg:0,
+  angD:60, angC:90, angR:120, servo:90, nb:true, n:0, trActive:false, trTimer:null, trDelay:4, trInt:3, trTot:5, train:'', alarm:''};
+function simReady() { return SIM.run && Math.abs(SIM.bs - SIM.bsSp) <= Math.max(0.03 * SIM.bsSp, 50) && Math.abs(SIM.ts - SIM.tsSp) <= Math.max(0.03 * SIM.tsSp, 50); }
+function simState() {
+  return {type:'state', presets: SIM.pv.map(p => ({n:p.n, b:p.b, t:p.t})), stopAt: SIM.stopAt, robot: SIM.run ? 'ROBOT EN FUNCIONAMIENTO' : 'ROBOT DETENIDO', alarm: SIM.alarm, sequencePending: false,
+    train: SIM.train, trainActive: SIM.trActive, sensorBeam: '', exActive: false, exPaused: false, exText: '', autoOffMin: 0,
+    backspin:{state: SIM.run ? (simReady() ? 'ACTIVO' : 'ACELERANDO') : 'DETENIDO', current: Math.round(SIM.bs / 45), rpm: Math.round(SIM.bs), setpointRpm: SIM.bsSp, direction:'REV', stalled:false},
+    topspin:{state: SIM.run ? (simReady() ? 'ACTIVO' : 'ACELERANDO') : 'DETENIDO', current: Math.round(SIM.ts / 45), rpm: Math.round(SIM.ts), setpointRpm: SIM.tsSp, direction:'FWD', stalled:false},
+    feeder:{state:'DETENIDO', current:0, direction:'FWD'}, feederSeconds: SIM.secs, feederAvg: SIM.avg, feederPct: 47,
+    ballCount: SIM.ball, noBallStop: SIM.nb, stopAt: 0, sweep: !!SIM.sweep, sesion: SIM.sesion || '', progOff: SIM.off || [0,0,0,0,0,0,0,0,0], angD: SIM.angD, angC: SIM.angC, angR: SIM.angR, servoAngle: SIM.servo,
+    trainDelay: SIM.trDelay, trainInterval: SIM.trInt, trainCount: SIM.trTot, trainPos: TR.pos, trainPreset: PROFILES.findIndex(p => p.id === TR.profile)};
+}
+function simCmd(o) {
+  switch (o.cmd) {
+    case 'rollersOn': SIM.run = true; if (!SIM.bsSp) { SIM.bsSp = 2750; SIM.tsSp = 2750; } break;
+    case 'toggleAll': SIM.run = !SIM.run; break;
+    case 'stopAll': SIM.run = false; SIM.trActive = false; clearInterval(SIM.trTimer); SIM.train = ''; break;
+    case 'preset': { const p = SIM.pv.find(x => x.n === o.name); if (p) { SIM.bsSp = p.b; SIM.tsSp = p.t; } break; }
+    case 'setPreset': SIM.pv[o.index].b = o.backRpm; SIM.pv[o.index].t = o.topRpm; break;
+    case 'setStopAt': SIM.stopAt = o.value; break;
+    case 'feedOn': clearInterval(SIM.feedT); SIM.feedT = setInterval(() => { if (!SIM.run) return; if (SIM.stopAt && SIM.ball >= SIM.stopAt) { clearInterval(SIM.feedT); SIM.run = false; S = simState(); render(); return; } SIM.ball++; SIM.avg = SIM.secs; S = simState(); render(); }, SIM.secs * 1000); break;
+    case 'setRPM': if (o.motor === 'backspin') SIM.bsSp = o.value; else SIM.tsSp = o.value; break;
+    case 'launchOne': if (simReady()) setTimeout(() => { SIM.ball++; SIM.avg = SIM.secs; }, 350); else toast('Espera a que los rodillos estén listos'); break;
+    case 'setServoAngle': if (o.pos === 'D') SIM.angD = o.value; if (o.pos === 'C') SIM.angC = o.value; if (o.pos === 'R') SIM.angR = o.value; break;
+    case 'setFeederSeconds': SIM.secs = o.value; break;
+    case 'trainStart': simTrainStart(); break;
+    case 'trainConfig': SIM.trDelay = o.delay; SIM.trTot = o.count; SIM.trInt = o.interval; break;
+    case 'trainStop': SIM.trActive = false; clearInterval(SIM.trTimer); SIM.train = ''; break;
+    case 'stopFeed': clearInterval(SIM.feedT); break;
+    case 'sweepStart': SIM.sweep = true; break;
+    case 'sweepStop': SIM.sweep = false; break;
+    case 'sesionStart': SIM.sesion = 'Serie 1 de ' + o.series + ' · bolas 0/' + o.balls; break;
+    case 'sesionStop': SIM.sesion = ''; break;
+    case 'setProgOffset': SIM.off = SIM.off || [0,0,0,0,0,0,0,0,0]; SIM.off[o.index] = o.value; break;
+    case 'resetCount': SIM.ball = 0; SIM.avg = 0; break;
+    case 'setNoBallStop': SIM.nb = !!o.value; break;
+  }
+  if (o.cmd !== 'state') S = simState();
+  render();
+}
+function simTrainStart() {
+  if (!SIM.run) { SIM.run = true; if (!SIM.bsSp) { SIM.bsSp = 2750; SIM.tsSp = 2750; } }
+  clearInterval(SIM.trTimer);
+  SIM.trActive = true; SIM.n = 0;
+  SIM.train = 'Primera bola en ' + SIM.trDelay.toFixed(1) + ' s';
+  const go = () => {
+    SIM.n++; SIM.ball++; SIM.avg = SIM.trInt;
+    if (SIM.n >= SIM.trTot) { SIM.trActive = false; clearInterval(SIM.trTimer); SIM.train = 'Entrenamiento terminado: ' + SIM.n + ' bolas. Los motores siguen girando.'; }
+    else SIM.train = 'Próxima bola en ' + SIM.trInt.toFixed(1) + ' s (' + SIM.n + ' de ' + SIM.trTot + ')';
+    S = simState(); render();
+  };
+  setTimeout(() => { go(); if (SIM.trActive) SIM.trTimer = setInterval(go, SIM.trInt * 1000); }, SIM.trDelay * 1000);
+}
+setInterval(() => {
+  if (!sim) return;
+  const step = (v, sp) => sp > 0 ? v + clamp(sp - v, -160, 160) : Math.max(0, v - 120);
+  SIM.bs = step(SIM.bs, SIM.run ? SIM.bsSp : 0);
+  SIM.ts = step(SIM.ts, SIM.run ? SIM.tsSp : 0);
+  S = simState(); render();
+}, 200);
+
+// ---- Pintura general ----
+function renderSimBanner() {   // 1.20: aviso fijo mientras la simulación está activa
+  let b = document.getElementById('sim-banner');
+  if (!b) {
+    b = document.createElement('div'); b.id = 'sim-banner';
+    b.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#b45309;color:#fff;text-align:center;font-weight:700;padding:6px;z-index:999';
+    b.textContent = 'MODO SIMULACIÓN: datos y acciones simulados. No se envía nada al robot.';
+    document.body.prepend(b);
+  }
+  b.hidden = !sim;
+}
+function fitLayout() {   // 1.25: el contenido se ajusta a la cabecera y al pie fijos
+  const t = document.querySelector('header.top'), d = document.querySelector('footer.dock');
+  if (t) document.body.style.paddingTop = t.offsetHeight + 'px';
+  if (d) { document.body.style.paddingBottom = d.offsetHeight + 'px'; $('toast').style.bottom = (d.offsetHeight + 12) + 'px'; }
+}
+window.addEventListener('resize', fitLayout);
+function render() {
+  const X = cur();
+  renderSimBanner();
+  const dr = $('dock-roll'); if (dr) dr.textContent = rollersRunning(X) ? 'Apagar rodillos' : 'Encender rodillos';
+  const df = $('dock-feed'); if (df) df.textContent = X.feedRev ? 'Suministro: atrás' : 'Suministro: adelante';   // 2.0
+  const pp = $('pr-pause'); if (pp) pp.textContent = X.sesionPaused ? 'Reanudar' : 'Pausar';   // 2.0
+  renderFin(X);   // 2.0
+  renderExFin(X);   // 2.5
+  if ($("calc-form") && !$("calc-dist")) calcRender();   // 2.2: el formulario de la calculadora se dibuja una vez
+  fitLayout();
+  const [label, cls] = chipInfo(X);
+  const c = $('chip'); c.textContent = label; c.className = 'chip ' + cls;
+  $('rpm').textContent = Math.round(X.backspin.rpm) + ' / ' + Math.round(X.topspin.rpm);
+  $('bolas').textContent = X.ballCount;
+  $('ind-wifi').textContent = online() ? 'Wi-Fi ✓' : 'Sin Wi-Fi';
+  $('ind-wifi').className = 'ind' + (online() ? ' ok' : '');
+  if (X.ballCount !== lastCount) { if (lastCount >= 0) lastBallAt = Date.now(); lastCount = X.ballCount; }
+  const beam = X.sensorBeam || '';
+  $('ind-sens').textContent = beam ? 'Sensor: haz ' + beam : 'Sensor —';
+  $('ctx').textContent = ctxTexto(X);   // 4.1
+  $('ind-sens').className = 'ind' + (beam === 'libre' ? ' ok' : '');
+  const b = $('banner');
+  if (X.alarm && X.alarm !== window.LAST_ALARM) { window.LAST_ALARM = X.alarm; pushMsg('ALARMA: ' + X.alarm); }   // 4.8
+  if (X.alarm && online()) {
+    const hint = /SIN BOLAS/.test(X.alarm) ? 'Revisa la caja de bolas o un atasco y vuelve a ENCENDER.'
+      : /RODILLO/.test(X.alarm) ? 'Revisa el encoder y la alimentación del motor indicado.'
+      : /META/.test(X.alarm) ? 'Pulsa REINICIAR CONTEO en Ajustes para volver a lanzar.'
+      : 'Revisa el robot y vuelve a intentarlo.';
+    b.innerHTML = '⚠ ' + X.alarm + '<small>' + hint + '</small>'; b.hidden = false;
+  } else b.hidden = true;
+  if (view === 'libre') renderLibre();
+  if (view === 'ejercicios' && exMode === 'list') renderEx();   // 2.3: el estado llega cada 500 ms; no redibujar el editor mientras se escribe
+  if (view === 'tercera') renderTercera();
+  if (view === 'ajustes') renderAjustes();
+  // 1.18: cinco grupos; Ejercicios y Tercera bola pertenecen a Entrenamiento
+  const GRP = {libre: 'inicio', calc: 'lanzamientos', ejercicios: 'entrenamiento', tercera: 'entrenamiento', ajustes: 'ajustes'};
+  document.querySelectorAll('.tabs button').forEach(t => t.classList.toggle('on', t.dataset.grp === GRP[view]));
+  document.querySelectorAll('.subtabs button').forEach(t => t.classList.toggle('on', t.dataset.tab === view));
+  document.querySelectorAll('.view').forEach(v => { v.hidden = v.id !== 'v-' + view; });
+}
+// 1.16: mensajes de confirmación (solo para comandos que cambian ajustes)
+const OK_MSG = {setRPM: 'Consigna aplicada y guardada', setFeederSeconds: 'Intervalo guardado',
+  preset: 'Perfil aplicado', setPreset: 'Perfil de tiro guardado', setWifi: 'Red Wi-Fi guardada',
+  setServoAngle: 'Ángulo guardado', setProgOffset: 'Corrección guardada', setAutoOff: 'Apagado automático guardado',
+  trainConfig: 'Configuración de la tercera bola guardada', clearLogs: 'Registro borrado', resetCount: 'Conteo puesto en cero'};
+function confirmarOk(cmd) { if (OK_MSG[cmd]) toast(OK_MSG[cmd]); }
+
+// 1.16: diagnóstico por motor con los datos del estado (consigna, RPM, error, PWM, dirección, estado, alarmas)
+function renderDiag(X) {
+  const el = $('diag-motores'); if (!el) return;
+  const fila = (lbl, m, conEncoder) => {
+    const sp = m && m.setpointRpm != null ? m.setpointRpm : null;
+    const rpm = m && m.rpm != null ? m.rpm : null;
+    const err = (sp && rpm != null) ? (rpm - sp) / sp * 100 : null;
+    const alarmas = [];
+    if (m && m.stalled) alarmas.push('atasco');
+    if (conEncoder && m && m.current > 0 && m.hasPulses === false) alarmas.push('sin pulsos del encoder');
+    const pwm = m ? `${m.current} % / ${m.target} %` : '—';
+    return `<tr><td>${lbl}</td><td>${sp != null ? sp : '—'}</td><td>${rpm != null ? rpm.toFixed(0) : '—'}</td>` +
+      `<td>${err != null ? (err >= 0 ? '+' : '') + err.toFixed(1) + ' %' : '—'}</td><td>${pwm}</td>` +
+      `<td>${m ? m.direction : '—'}</td><td>${m ? m.state : '—'}</td><td>${alarmas.join(', ') || 'ninguna'}</td></tr>`;
+  };
+  const alarmaGeneral = X.alarm ? `<p class="mut"><b>Alarma del robot:</b> ${X.alarm}</p>` : '';
+  el.innerHTML = `<div style="overflow-x:auto"><table style="width:100%;font-size:14px">` +
+    `<tr><th>Motor</th><th>Consigna RPM</th><th>RPM real</th><th>Error</th><th>PWM actual / objetivo</th><th>Dirección</th><th>Estado</th><th>Alarmas</th></tr>` +
+    fila('Backspin', X.backspin, true) + fila('Topspin', X.topspin, true) + fila('Suministro', X.feeder, false) +
+    `</table></div>` + alarmaGeneral;
+}
+
+const MSGS = [];   // 4.8: historial de mensajes y alarmas
+function pushMsg(t) { MSGS.unshift({h: new Date().toLocaleTimeString(), t}); if (MSGS.length > 60) MSGS.pop(); }
+function showMsgs() {
+  let o = document.getElementById('msgs-ov');
+  if (!o) { o = document.createElement('div'); o.id = 'msgs-ov'; o.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:99;display:flex;align-items:center;justify-content:center;padding:14px'; document.body.appendChild(o); o.onclick = e => { if (e.target === o) o.remove(); }; }
+  o.innerHTML = `<div style="background:#15202e;border-radius:14px;padding:14px;max-width:460px;width:100%;max-height:80vh;overflow:auto;color:#e6edf6"><div style="font-weight:700;margin-bottom:8px">Últimos mensajes</div>` + (MSGS.length ? MSGS.map(m => `<div style="font-size:13px;padding:5px 0;border-bottom:1px solid #2a3a4f"><span style="color:#9fb0c6">${m.h}</span> ${m.t}</div>`).join('') : '<div>Sin mensajes todavía.</div>') + `<button class="btn" style="margin-top:10px" onclick="this.parentElement.parentElement.remove()">Cerrar</button></div>`;
+}
+function toast(msg) {
+  pushMsg(msg);
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 2400);
+}
+const RAND_HIST = {X: [], Y: []};   // 4.8: nunca tres seguidas iguales
+function pickHist(k, opts, pesos) {
+  let c = opts[opts.length - 1];
+  for (let i = 0; i < 30; i++) {
+    const r = Math.random() * 100; let acum = 0;
+    for (let j = 0; j < opts.length; j++) { acum += pesos[j]; if (r < acum) { c = opts[j]; break; } }
+    const h = RAND_HIST[k];
+    if (!(h.length === 2 && h[0] === c && h[1] === c)) break;
+  }
+  RAND_HIST[k] = [...RAND_HIST[k], c].slice(-2);
+  return c;
+}
+function resolvePos(p) {
+  if (p === 'X') return pickHist('X', ['R', 'C', 'D'], [50, 30, 20]);   // revés 50 %, centro 30 %, derecha 20 %
+  if (p === 'Y') return pickHist('Y', ['D', 'R'], [50, 50]);           // derecha-revés 50/50
+  return p;
+}
+function waitFor(cond, ms) {
+  return new Promise(res => { const t0 = Date.now();
+    const iv = setInterval(() => { if (cond()) { clearInterval(iv); res(true); } else if (Date.now() - t0 > ms) { clearInterval(iv); res(false); } }, 100);
+  });
+}
+
+// ---- LIBRE ----
+function calcRollers(pct, e) {
+  const V = pct / 100 * CAL.maxRpm;
+  return {back: clamp(Math.round(V * Math.pow(2, -e / 2)), 0, 6000), top: clamp(Math.round(V * Math.pow(2, e / 2)), 0, 6000)};
+}
+function effLabel(e) { return e > 0.05 ? 'Topspin +' + e.toFixed(1) : e < -0.05 ? 'Backspin +' + (-e).toFixed(1) : 'Sin efecto'; }
+// ---- 1.23: Velocidad/Efecto (A) y RPM por rodillo (B), enlazados. La fuente es el último valor tocado. ----
+const TUNE = {src: 'B', pct: 0, e: 0, b: 0, t: 0, timer: null};
+const STEP_SET = {spd: [-5, -1, 1, 5], eff: [-0.5, -0.1, 0.1, 0.5], rb: [-250, -50, 50, 250], rt: [-250, -50, 50, 250]};
+const STEP_LABEL = d => (d > 0 ? '+' : '−') + Math.abs(d);
+function fillSteppers() {
+  for (const k of Object.keys(STEP_SET)) {
+    const el = $(k + '-st'); if (!el || el.children.length) continue;
+    el.innerHTML = STEP_SET[k].map(d => `<button class="btn tbtn" data-act="tune" data-k="${k}" data-d="${d}">${STEP_LABEL(d)}</button>`).join('');
+  }
+}
+// Deriva Velocidad y Efecto de las RPM sin recortar: si no se puede, devuelve el motivo.
+function mapFromRpm(b, t) {
+  if (!(b > 0 && t > 0)) return {pct: null, e: null, aviso: (b > 0 || t > 0) ? 'Un rodillo está en 0: el efecto no está definido.' : ''};
+  const pct = Math.sqrt(b * t) / CAL.maxRpm * 100, e = Math.log2(t / b);
+  const av = [];
+  if (pct > 100) av.push(`Velocidad ${pct.toFixed(0)} %: RPM por encima del máximo (${CAL.maxRpm}).`);
+  if (Math.abs(e) > 3) av.push(`Efecto ${e.toFixed(1)} fuera de −3 a +3.`);
+  return {pct, e, aviso: av.join(' ')};
+}
+function renderHoy(X) {   // 1.26: bolas y tiempo de hoy, y total
+  const el = $('hoy-card'); if (!el) return;
+  const st = X.stats;
+  if (!st) { el.innerHTML = '<div class="h">Hoy</div><p class="mut">Sin datos del robot (sin conexión o modo simulación).</p>'; return; }
+  el.innerHTML = `<div class="h">Hoy</div>
+    <div class="grid2">
+      <div><div class="mut">Bolas lanzadas</div><div class="val">${st.hoy}</div></div>
+      <div><div class="mut">Tiempo con rodillos</div><div class="val">${st.minHoy} min</div></div>
+    </div>
+    <p class="mut" style="margin-top:10px">Total desde que se guardó: ${st.total} bolas · ${st.minTotal} min.</p>
+    <p class="mut">${st.conHora ? 'El contador de hoy se reinicia a medianoche (hora del celular).' : 'Sin hora del celular: el contador de hoy no se reinicia por día.'}</p>
+    <div class="grid2" style="margin-top:8px"><button class="btn" data-act="resetcount">Reiniciar cuenta de bolas</button><button class="btn" data-act="statsreset">Borrar estadísticas</button></div>`;
+}
+const FIN = {shown: null, timer: null};   // 2.0: aviso de práctica terminada
+function renderFin(X) {
+  if (X.sesionFinId === undefined) return;
+  if (FIN.shown === null) { FIN.shown = X.sesionFinId; return; }   // lo que ya existía al conectar no se muestra
+  if (X.sesionFinId === FIN.shown) return;
+  FIN.shown = X.sesionFinId;
+  let b = $('fin-banner');
+  if (!b) {
+    b = document.createElement('div'); b.id = 'fin-banner';
+    b.style.cssText = 'position:fixed;left:10px;right:10px;background:#1e3a5f;color:#fff;border:1px solid #3b82f6;border-radius:12px;padding:10px 12px;z-index:6;font-weight:700;font-size:14px';
+    b.onclick = () => { b.hidden = true; };
+    document.body.appendChild(b);
+  }
+  b.textContent = X.sesionFin;
+  const d = document.querySelector('footer.dock');
+  b.style.bottom = ((d ? d.offsetHeight : 120) + 10) + 'px';
+  b.hidden = false;
+  clearTimeout(FIN.timer); FIN.timer = setTimeout(() => { b.hidden = true; }, 20000);
+}
+const EXFIN = {shown: null, timer: null};   // 2.5: aviso de ejercicio terminado o detenido
+function renderExFin(X) {
+  if (X.exFinId === undefined) return;
+  if (EXFIN.shown === null) { EXFIN.shown = X.exFinId; return; }   // lo que ya existía al conectar no se muestra
+  if (X.exFinId === EXFIN.shown) return;
+  EXFIN.shown = X.exFinId;
+  let b = $('ex-fin-banner');
+  if (!b) {
+    b = document.createElement('div'); b.id = 'ex-fin-banner';
+    b.style.cssText = 'position:fixed;left:10px;right:10px;background:#14532d;color:#fff;border:1px solid #22c55e;border-radius:12px;padding:10px 12px;z-index:6;font-weight:700;font-size:14px';
+    b.onclick = () => { b.hidden = true; };
+    document.body.appendChild(b);
+  }
+  b.textContent = X.exFinMsg;
+  const d = document.querySelector('footer.dock');
+  b.style.bottom = ((d ? d.offsetHeight : 120) + 10) + 'px';
+  b.hidden = false;
+  clearTimeout(EXFIN.timer); EXFIN.timer = setTimeout(() => { b.hidden = true; }, 25000);
+}
+// 2.7: el tipo de tiro se elige con tres casillas (distancia, efecto, intensidad). Sin efecto no tiene intensidad.
+function tipoIdDesdeSelectores() {
+  const d = $('sel-dist').value, e = $('sel-efe').value, i = $('sel-int').value;
+  const intDisabled = e === 'n';
+  $('sel-int').disabled = intDisabled;
+  return e === 'n' ? 'n_' + d : e + '_' + d + '_' + i;
+}
+// 2.10: nombre completo del golpe debajo de las casillas, con sus RPM
+function actualizarTextoTipo() {
+  const el = $('tipo-txt'); if (!el) return;
+  const c = COMBOS.find(x => x.id === tipoIdDesdeSelectores());
+  if (!c) { el.textContent = ''; return; }
+  el.innerHTML = `<div>${c.name}</div><div class="mut" style="font-size:14px">Backspin ${c.bs} · Topspin ${c.ts} RPM` +
+    (c.limitado ? ' · intensidad limitada a la rotación posible' : '') + (c.estimado ? ' · valor estimado (sin medir)' : '') + '</div>';
+}
+function aplicarTipoDeSelectores() {
+  const id = tipoIdDesdeSelectores();
+  const p = PROF(id);
+  actualizarTextoTipo();
+  send({cmd: 'preset', name: p.preset});
+  render();
+}
+document.addEventListener('change', e => { if (['sel-dist', 'sel-efe', 'sel-int'].includes(e.target.id)) aplicarTipoDeSelectores(); });   // 2.7
+// 2.11: selector de tipo de tiro en tres casillas (efecto, distancia, intensidad), igual en todas las pantallas.
+// El selector original queda oculto: sus manejadores de cambio siguen funcionando sin cambios.
+const TIPO_E = [['b','Backspin'],['n','Sin efecto'],['t','Topspin']];
+const TIPO_D = [['mc','Muy corto 0.8 m'],['co','Corto 1.2 m'],['me','Medio 1.6 m'],['la','Largo 2.0 m']];
+const TIPO_I = [['s','Suave'],['m','Medio'],['f','Fuerte']];
+function parseTipo(id) {
+  const m = /^([bnt])_(mc|co|me|la)(?:_([smf]))?$/.exec(id || '');
+  return m ? {e: m[1], d: m[2], i: m[3] || 's'} : {e: 'b', d: 'co', i: 's'};
+}
+function tipoIdDe(e, d, i) { return e === 'n' ? 'n_' + d : e + '_' + d + '_' + i; }
+function selOpts(lista, val) { return lista.map(([v, t]) => `<option value="${v}" ${v === val ? 'selected' : ''}>${t}</option>`).join(''); }
+function tipoSelHtml(atributos, valorId) {
+  const t = parseTipo(valorId);
+  const visibles = `<div class="tipo3" style="display:flex;flex-direction:column;gap:6px;margin-top:6px">
+    <select class="txt tipo-e">${selOpts(TIPO_E, t.e)}</select>
+    <select class="txt tipo-d">${selOpts(TIPO_D, t.d)}</select>
+    <select class="txt tipo-i" ${t.e === 'n' ? 'disabled' : ''}>${selOpts(TIPO_I, t.i)}</select></div>`;
+  const oculto = `<select ${atributos} style="display:none">${PROFILES.map(p => `<option value="${p.id}" ${p.id === valorId ? 'selected' : ''}>${p.label}</option>`).join('')}</select>`;
+  return visibles + oculto;
+}
+// sincroniza las casillas con el valor del selector oculto (p. ej. al cargar el estado)
+function syncTipo3(oculto) {
+  const wrap = oculto && oculto.previousElementSibling;
+  if (!wrap || !wrap.classList.contains('tipo3')) return;
+  const t = parseTipo(oculto.value);
+  wrap.querySelector('.tipo-e').value = t.e;
+  wrap.querySelector('.tipo-d').value = t.d;
+  wrap.querySelector('.tipo-i').value = t.i;
+  wrap.querySelector('.tipo-i').disabled = t.e === 'n';
+}
+// cualquier cambio en las casillas actualiza el selector oculto y dispara su manejador normal
+document.addEventListener('change', e => {
+  if (!e.target.classList.contains('tipo-e') && !e.target.classList.contains('tipo-d') && !e.target.classList.contains('tipo-i')) return;
+  const wrap = e.target.closest('.tipo3'); if (!wrap) return;
+  const ef = wrap.querySelector('.tipo-e').value, di = wrap.querySelector('.tipo-d').value, it = wrap.querySelector('.tipo-i').value;
+  wrap.querySelector('.tipo-i').disabled = ef === 'n';
+  const oculto = wrap.nextElementSibling; if (!oculto) return;
+  const id = tipoIdDe(ef, di, it);
+  if (oculto.value === id) return;
+  oculto.value = id;
+  oculto.dispatchEvent(new Event('change', {bubbles: true}));
+});
+// 4.1: resumen fijo: tipo de bola · frecuencia del suministro · posición del servo
+function ctxTexto(X) {
+  const tipo = X.tipo ? X.tipo : 'sin tipo de bola';
+  const frec = X.feederSeconds ? 'suministro ' + Number(X.feederSeconds).toFixed(2) + ' s' : '';
+  let servo;
+  if (X.sweep) servo = 'oscilación ' + (X.swLo ?? '?') + '–' + (X.swHi ?? '?') + '°';
+  else if (X.trainActive && X.trainPos === 'X') servo = 'aleatorio R-C-D';
+  else if (X.servoAngle !== undefined && X.angD !== undefined) {
+    const d = Math.abs(X.servoAngle - X.angD), c = Math.abs(X.servoAngle - X.angC), r = Math.abs(X.servoAngle - X.angR);
+    const m = Math.min(d, c, r);
+    servo = m > 2 ? 'ángulo ' + X.servoAngle + '°' : (m === d ? 'derecha' : m === c ? 'centro' : 'revés');
+  } else servo = 'servo —';
+  const aviso = (X.testOn && X.testEnc === false) ? '⚠ PRUEBA SIN ENCODER · ' : '';   // 4.7
+  const ej = (X.exActive && window.CUR_EX) ? 'Ejercicio: ' + window.CUR_EX + ' · ' : '';   // 4.8
+  return aviso + ej + tipo + ' · ' + frec + ' · servo ' + servo + ' · v' + (X.fw || '?');   // 4.5: versión visible
+}
+function renderTune(X) {
+  fillSteppers();
+  if (X.calMax) CAL.maxRpm = X.calMax;   // la RPM máxima la guarda el robot
+  const bs = X.backspin.setpointRpm, ts = X.topspin.setpointRpm;
+  if (!recently('tune') && !TUNE.timer && bs > 0 && ts > 0) { TUNE.b = bs; TUNE.t = ts; TUNE.src = 'B'; }
+  const A = TUNE.src === 'A' ? {pct: TUNE.pct, e: TUNE.e, aviso: ''} : mapFromRpm(TUNE.b, TUNE.t);
+  $('spd').value = A.pct != null ? Math.min(100, Math.max(0, A.pct)) : 0;
+  $('spd-v').textContent = A.pct != null ? A.pct.toFixed(0) + ' %' : '—';
+  $('eff').value = A.e != null ? Math.max(-3, Math.min(3, A.e)) : 0;
+  $('eff-v').textContent = A.e != null ? (A.e > 0 ? '+' : '') + A.e.toFixed(1) + ' · ' + effLabel(A.e) : '—';
+  $('rb-v').textContent = Math.round(TUNE.b) + ' RPM · real ' + Math.round(X.backspin.rpm || 0);
+  $('rt-v').textContent = Math.round(TUNE.t) + ' RPM · real ' + Math.round(X.topspin.rpm || 0);
+  $('tiro-real').textContent = 'RPM reales: backspin ' + Math.round(X.backspin.rpm || 0) + ' · topspin ' + Math.round(X.topspin.rpm || 0);
+  $('tiro-aviso').textContent = A.aviso || '';
+}
+function stepTune(k, d) {
+  touched.tune = Date.now();
+  if (k === 'spd' || k === 'eff') {
+    const A = TUNE.src === 'A' ? {pct: TUNE.pct, e: TUNE.e} : mapFromRpm(TUNE.b, TUNE.t);
+    let pct = A.pct ?? 0, e = A.e ?? 0;
+    if (k === 'spd') pct = clamp(Math.round((pct + d) * 10) / 10, 0, 100);
+    else e = clamp(Math.round((e + d) * 10) / 10, -3, 3);
+    TUNE.src = 'A'; TUNE.pct = pct; TUNE.e = e;
+    const r = calcRollers(pct, e); TUNE.b = r.back; TUNE.t = r.top;
+  } else {
+    const key = k === 'rb' ? 'b' : 't';
+    TUNE[key] = clamp(Math.round(TUNE[key] + d), 0, 6000);
+    TUNE.src = 'B';
+  }
+  scheduleTune();
+  renderTune(cur());
+}
+// Envío diferido: un solo par de comandos con los valores finales, 300 ms después del último toque.
+function scheduleTune() {
+  clearTimeout(TUNE.timer);
+  TUNE.timer = setTimeout(() => {
+    TUNE.timer = null;
+    send({cmd: 'setRPM', motor: 'backspin', value: Math.round(TUNE.b)});
+    send({cmd: 'setRPM', motor: 'topspin', value: Math.round(TUNE.t)});
+  }, 300);
+}
+
+function renderLibre() {
+  const X = cur();
+  const pb = $('profiles');
+  if (!pb.children.length) {
+    pb.innerHTML = `<div style="display:flex;flex-direction:column;gap:8px">
+      <label class="mut">Efecto</label>
+      <select class="txt" id="sel-efe"><option value="b">Backspin</option><option value="n">Sin efecto</option><option value="t">Topspin</option></select>
+      <label class="mut">Distancia</label>
+      <select class="txt" id="sel-dist"><option value="mc">Muy corto 0.8 m</option><option value="co">Corto 1.2 m</option><option value="me">Medio 1.6 m</option><option value="la">Largo 2.0 m</option></select>
+      <label class="mut">Cantidad de efecto</label>
+      <select class="txt" id="sel-int"><option value="s">Suave</option><option value="m">Medio</option><option value="f">Fuerte</option></select>
+    </div><p class="val" id="tipo-txt" style="margin-top:10px;font-size:17px"></p>`;   // 2.10: columna efecto-distancia-intensidad   // 2.7: tipo = distancia + efecto + intensidad
+    $('mesa').innerHTML = ['R','C','D'].map(p => `<button class="zone" data-act="pos" data-p="${p}">${POS_LABEL[p]}</button>`).join('');
+    $('rand').innerHTML = `<button class="btn" data-act="pos" data-p="X">Aleatorio R-C-D</button><button class="btn" data-act="pos" data-p="M">Aleatorio ángulo</button>`;
+  }
+  [...pb.children].forEach((b, i) => b.classList.toggle('sel', PROFILES[i].id === profileId));
+  document.querySelectorAll('#mesa .zone').forEach(z => z.classList.toggle('sel', z.dataset.p === pos));
+  document.querySelectorAll('#rand .btn').forEach(z => z.classList.toggle('sel', z.dataset.p === pos));
+  renderTune(X);   // 1.23
+  renderHoy(X);     // 1.26
+  $('fs-v').textContent = X.feederSeconds.toFixed(2) + ' s';
+  $('fs-m').textContent = Math.round(60 / X.feederSeconds) + ' bolas/min · últimas 5: ' + (X.feederAvg > 0 ? X.feederAvg.toFixed(2) + ' s' : '—');
+  const running = rollersRunning(X);
+  const rb = $('roll-btn'); rb.textContent = running ? 'Apagar rodillos' : 'Encender rodillos';
+  rb.className = 'btn ' + (running ? 'bad' : 'alt');
+  let reason = '';
+  if (!online()) reason = 'Sin conexión con el robot.';
+  else if (!running) reason = 'Enciende los rodillos primero.';
+  else if (!rollersReady(X)) reason = 'Esperando velocidad de los rodillos.';
+  else if (X.feeder.state !== 'DETENIDO') reason = 'Hay un disparo en curso.';
+  $('sweep-v').textContent = SWEEP_SEG.toFixed(1) + ' s';
+  if (X.swLo !== undefined && document.activeElement !== $('sw-lo')) $('sw-lo').value = X.swLo;   // 3.6: no redibujar mientras se escribe
+  if (X.swHi !== undefined && document.activeElement !== $('sw-hi')) $('sw-hi').value = X.swHi;
+  const swb = $('sweep-btn'); swb.textContent = X.sweep ? 'Detener' : 'Iniciar'; swb.className = 'btn ' + (X.sweep ? 'bad' : 'go');
+  if (!PR_LOADED) { $('pr-min').value = PR.min; $('pr-series').value = PR.series; $('pr-balls').value = PR.balls; $('pr-rest').value = PR.rest; PR_LOADED = true; }
+  $('pr-txt').textContent = X.sesion || 'Sin práctica activa';
+  const serieOn = X.feeder.state !== 'DETENIDO';
+  $('serie-n').textContent = SERIE_N ? SERIE_N + ' bolas' : 'sin límite';
+  const sb = $('serie-btn');
+  if (serieOn) { sb.className = 'btn bad big'; sb.textContent = 'DETENER SERIE'; sb.dataset.act = 'serieStop'; sb.disabled = false; }
+  else { sb.className = 'btn go big'; sb.textContent = reason ? 'Lanzar serie (espera “Listo”)' : 'Lanzar serie'; sb.dataset.act = 'serie'; sb.disabled = !!reason; }
+  $('tiro-btn').disabled = !!reason;
+  $('launch-note').textContent = reason;
+}
+
+// ---- EJERCICIOS ----
+function exItemHtml(kind, o) {
+  if (kind === 'tpl') return `<div class="item"><div style="flex:1"><div class="t">${o.name}</div><div class="mut">${o.desc}</div></div><button class="btn sm" data-act="tplopen" data-id="${o.id}">Abrir</button></div>`;
+  return `<div class="item"><div style="flex:1"><div class="t">${o.name}${o.fav ? '<span class="tag">Fav</span>' : ''}</div><div class="mut">${o.bolas} bolas · guardado en el robot</div></div><button class="btn sm" data-act="exopen" data-id="${o.id}">Abrir</button></div>`;
+}
+function sessionCard() {
+  const X = cur();
+  if (!sim && X.exActive) return `<div class="card"><div class="h">Sesión en curso</div><div class="val">${X.exText}</div><div class="mut">${X.exPaused ? 'En pausa' : 'En marcha'}</div>
+    <div class="grid2" style="margin-top:10px"><button class="btn" data-act="${X.exPaused ? 'exresume' : 'expause'}">${X.exPaused ? 'Reanudar' : 'Pausar'}</button><button class="btn bad" data-act="exstopses">Terminar sesión</button></div></div>`;
+  if (RUN.active) return `<div class="card"><div class="h">Sesión en curso</div><div class="val">${RUN.label}</div><div class="mut">Bola ${RUN.idx} de ${RUN.total}</div><button class="btn bad wide" style="margin-top:10px" data-act="exstopses">Terminar sesión</button></div>`;
+  return '';
+}
+function renderEx() {
+  const list = $('ex-list'), det = $('ex-detail');
+  if (exMode !== 'list') { list.hidden = true; det.hidden = false; det.innerHTML = exMode === 'tpl' ? tplDetailHtml() : exMode === 'lib' ? libDetailHtml() : editorHtml(); return; }
+  list.hidden = false; det.hidden = true;
+  $('ex-filters').innerHTML = [['todos','Todos'],['fav','Favoritos'],['mine','En el robot'],['tpl','Plantillas'],['bib','Biblioteca']]
+    .map(([k, l]) => `<button class="btn sm ${exFilter === k ? 'sel' : ''}" data-act="exfilter" data-f="${k}">${l}</button>`).join('');
+  const q = exQuery.trim().toLowerCase();
+  const match = o => (!q || o.name.toLowerCase().includes(q)) && !/prueba/i.test(o.name);   // 3.8: sin las pruebas (no son ejercicios)
+  if (exFilter === 'bib') { $('ex-items').innerHTML = sessionCard() + libListHtml(); return; }
+  let html = sessionCard();
+  const tpls = (exFilter === 'todos' || exFilter === 'tpl') ? TEMPLATES.filter(match) : [];
+  let mine = (exFilter === 'todos' || exFilter === 'mine') ? EX.filter(match) : [];
+  if (exFilter === 'fav') mine = EX.filter(e => e.fav && match(e));
+  if (tpls.length) html += '<div class="h" style="margin-top:12px">Plantillas</div>' + tpls.map(t => exItemHtml('tpl', t)).join('');
+  if (mine.length) html += '<div class="h" style="margin-top:12px">Guardados en el robot</div>' + mine.map(e => exItemHtml('mine', e)).join('');
+  if (!tpls.length && !mine.length) html += '<div class="card center mut">Sin resultados. Crea un ejercicio con + Nuevo.</div>';
+  $('ex-items').innerHTML = html;
+}
+function tplDetailHtml() {
+  const t = TEMPLATES.find(x => x.id === exTpl);
+  if (!t) return '';
+  return `<div class="row"><button class="btn sm" data-act="exback">← Volver</button></div>
+    <h2 class="title" style="margin:12px 0 6px">${t.name}</h2><p class="mut">${t.desc}</p>
+    <div class="card">${t.seq ? 'Secuencia: 1 bola con Corte suave y 3 con Topspin suave; al terminar se detiene.' : 'Programa de oscilación del servo. Corre hasta la meta de bolas o hasta PARAR TODO. Usa los rodillos y el perfil actuales.'}</div>
+    <button class="btn go wide" data-act="tplrun" data-id="${t.id}">Ejecutar</button>
+    <button class="btn wide" style="margin-top:10px" data-act="tplcopy" data-id="${t.id}">Copiar a mis ejercicios (editable)</button>`;
+}
+function libHeaderHtml() {
+  const li = EDIT && EDIT.libInfo;
+  if (!li) return '';
+  const copia = EX.some(e => e.id === li.id);
+  return `<div class="card"><div class="h">Biblioteca · ${li.num}. ${li.name}</div>
+    <div class="mut">${LIB_CATS[li.cat]} · nivel ${li.level}</div>
+    <div style="margin-top:6px">${li.obj}</div>
+    <div class="mut" style="margin-top:6px">${li.tags.length ? li.tags.join(' · ') : 'Sin cambio de efecto ni de RPM'}</div>
+    <div class="note">Puedes editar cada bola y grabar. La versión editada queda en Mis ejercicios; la original sigue en la biblioteca.</div>
+    ${copia ? '<button class="btn wide" style="margin-top:8px" data-act="libreset" data-id="' + li.id + '">Restaurar original</button>' : ''}</div>`;
+}
+function editorHtml() {
+  const ex = EDIT.ex, b = ex.balls[EDIT.i];
+  const tabs = ex.balls.map((_, i) => `<button class="btn sm ${i === EDIT.i ? 'sel' : ''}" data-act="exball" data-i="${i}">${i + 1}</button>`).join('') + (ex.balls.length < 10 ? `<button class="btn sm" data-act="exadd">+</button>` : '') + `<div style="margin-top:8px">${tipoSelHtml('id="bulk-prof"', 'n_la')}<button class="btn sm" data-act="exbulk" style="margin-top:8px;width:100%">Aplicar a todas las bolas</button></div>`;   // 4.11
+  const perfOpts = PROFILES.map(p => `<option value="${p.id}" ${p.id === b.perfil ? 'selected' : ''}>${p.label}</option>`).join('');
+  const posOpts = ['R','C','D','K','Q','M','X','V','U','Z'].map(p => `<option value="${p}" ${p === b.pos ? 'selected' : ''}>${POS_LABEL[p]}</option>`).join('');
+  return `${libHeaderHtml()}<div class="row"><button class="btn sm" data-act="exback">← Lista</button><button class="btn sm ${ex.fav ? 'sel' : ''}" data-act="exfav">${ex.fav ? '★ Favorito' : '☆ Favorito'}</button></div>
+    <input class="txt" id="ex-name" value="${ex.name.replace(/"/g, '&quot;')}" style="margin:12px 0" placeholder="Nombre del ejercicio">
+    <div class="card"><div class="step"><button class="btn" data-act="exstep" data-k="rep" data-d="-1">−</button><div class="center"><div class="val">${(ex.rep ?? 2) === 0 ? '∞' : (ex.rep ?? 2)}</div><div class="mut">Series (0 = sin límite)</div></div><button class="btn" data-act="exstep" data-k="rep" data-d="1">+</button></div>
+    <div class="step" style="margin-top:8px"><button class="btn" data-act="exstep" data-k="ivg" data-d="-0.1">−</button><div class="center"><div class="val">${(ex.ivGlobal ?? 0) > 0 ? (ex.ivGlobal).toFixed(1) + ' s' : 'por bola'}</div><div class="mut">Intervalo entre bolas, todas (por bola = 0)</div></div><button class="btn" data-act="exstep" data-k="ivg" data-d="0.1">+</button></div></div>
+    <div class="h">Bolas (máx. 10)</div>
+    <div class="row" style="gap:6px">${tabs}</div>
+    <div class="card" style="margin-top:12px">
+      <div class="h">Bola ${EDIT.i + 1}</div>
+      <label class="mut">Tipo de tiro</label>${tipoSelHtml('data-field="perfil" data-i="' + EDIT.i + '"', b.perfil)}
+      <div class="row" style="margin-top:12px"><span>Saque</span><button class="switch ${b.saque ? 'on' : ''}" data-act="saque"></button></div>
+      <label class="mut" style="display:block;margin-top:12px">Posición</label><select data-field="pos" data-i="${EDIT.i}">${posOpts}</select>${EDIT.i === 0 ? '<button class="btn sm" data-act="exfirst" style="margin-top:12px;width:100%">Aplicar config. de la bola 1 a todas</button>' : ''}
+      <div class="step"><button class="btn" data-act="step" data-k="pausa" data-d="-0.1">−</button><div class="center"><div class="val">${b.pausa.toFixed(1)} s</div><div class="mut">Pausa tras la bola</div></div><button class="btn" data-act="step" data-k="pausa" data-d="0.1">+</button></div>
+      <div class="step"><button class="btn" data-act="step" data-k="reps" data-d="-1">−</button><div class="center"><div class="val">${b.reps}</div><div class="mut">Repeticiones</div></div><button class="btn" data-act="step" data-k="reps" data-d="1">+</button></div>
+      <div class="step"><button class="btn" data-act="step" data-k="disp" data-d="-1">−</button><div class="center"><div class="val">±${b.disp}°</div><div class="mut">Dispersión</div></div><button class="btn" data-act="step" data-k="disp" data-d="1">+</button></div>
+      <div class="step"><button class="btn" data-act="step" data-k="intervalo" data-d="-0.1">−</button><div class="center"><div class="val">${b.intervalo > 0 ? b.intervalo.toFixed(1) + ' s' : 'global'}</div><div class="mut">Frecuencia: intervalo hasta la siguiente bola (0 = global)</div></div><button class="btn" data-act="step" data-k="intervalo" data-d="0.1">+</button></div>
+      <label class="mut">Velocidad y giro (RPM por rodillo, 0 = del perfil)</label>
+      <div class="grid2" style="margin-top:6px"><input class="txt" type="number" min="0" max="6000" step="50" data-field="bsRpm" data-i="${EDIT.i}" value="${b.bsRpm || 0}" aria-label="backspin"><input class="txt" type="number" min="0" max="6000" step="50" data-field="tsRpm" data-i="${EDIT.i}" value="${b.tsRpm || 0}" aria-label="topspin"></div>
+      <div class="note">La pausa negativa se guarda como 0 (pendiente).</div>
+      ${ex.balls.length > 1 ? `<button class="btn sm wide" style="margin-top:10px" data-act="exdelball">Quitar esta bola</button>` : ''}
+    </div>
+    <div class="grid2"><button class="btn" data-act="exprobe">Probar bola</button><button class="btn go" data-act="exrun">Ejecutar en el robot</button></div>
+    <div class="grid2" style="margin-top:10px"><button class="btn" data-act="exsave">Guardar en el robot</button><button class="btn" data-act="exclone">Clonar</button></div>
+    <div class="grid2" style="margin-top:10px"><button class="btn sm" data-act="exexport">Exportar JSON</button><button class="btn sm" data-act="eximport">Importar JSON</button></div>
+    ${EX.some(e => e.id === ex.id) ? `<button class="btn bad wide" style="margin-top:10px" data-act="exdel">Eliminar del robot</button>` : ''}
+    <input type="file" id="ex-file" accept="application/json" hidden>`;
+}
+function exSteps(ex, ballsOnly) {
+  const list = ballsOnly ? [ex.balls[EDIT.i]] : ex.balls;
+  const out = [];
+  list.forEach(b => { for (let r = 0; r < (b.reps || 1); r++) out.push({perfil: b.perfil, pos: b.pos, pausa: b.pausa, disp: b.disp}); });
+  return out;
+}
+async function shot(st) {
+  if (st.perfil !== profileId) { profileId = st.perfil; send({cmd: 'preset', name: PROF(st.perfil).preset}); await sleep(900); }
+  if (!rollersRunning(cur())) send({cmd: 'rollersOn'});
+  const ok = await waitFor(() => RUN.abort || rollersReady(cur()), 20000);
+  if (RUN.abort) return;
+  if (!ok) { toast('Los rodillos no llegaron a la velocidad'); RUN.abort = true; return; }
+  const before = cur().ballCount;
+  pos = st.pos;
+  send({cmd: 'launchOne', pos: resolvePos(st.pos)});
+  const got = await waitFor(() => RUN.abort || cur().ballCount > before, 6000);
+  if (!got && !RUN.abort) toast('Bola no detectada por el sensor');
+}
+async function runSteps(steps, label) {
+  if (RUN.active) { toast('Ya hay un ejercicio en marcha'); return; }
+  RUN = {abort: false, active: true, label, idx: 0, total: steps.length};
+  toast('Iniciando: ' + label);
+  try {
+    for (const st of steps) {
+      if (RUN.abort) break;
+      RUN.idx++; renderEx();
+      await shot(st);
+      if (RUN.abort) break;
+      const p = Math.max(0, st.pausa || 0) * 1000;
+      if (p) await sleep(p);
+    }
+  } finally { RUN.active = false; renderEx(); }
+  toast(RUN.abort ? 'Sesión detenida' : 'Ejercicio terminado');
+}
+
+// ---- TERCERA BOLA ----
+let TR_SYNC = false;   // 1.20: una vez por conexión, la Tercera toma la configuración que tiene el robot
+function renderTercera() {
+  const X = cur();
+  if ($("tr-info")) $("tr-info").textContent = "Lanzadas " + (X.trainShots ?? 0) + " de " + (X.trainCount ?? 0) + (X.trainActive ? " · en curso" : "");   // 2.0: el objetivo es la cantidad de la serie
+  if (!TR_SYNC && !sim && S && S.trainCount !== undefined) {
+    TR_SYNC = true;
+    TR.delay = +S.trainDelay || TR.delay;
+    TR.count = +S.trainCount || TR.count;
+    TR.int = +S.trainInterval || TR.int;
+    if (['D', 'K', 'C', 'Q', 'R', 'X'].includes(S.trainPos)) TR.pos = S.trainPos;   // 2.12: sin M (ángulo aleatorio no aplica a la Tercera)
+    const nombres = ['Corte suave', 'Corte Fuerte', 'Bola muerta Suave', 'Bola muerta Fuerte', 'Topspin Suave', 'Topspin Fuerte', 'Backspin Corto', 'Topspin Corto', 'Sin efecto corto', 'Backspin medio', 'Sin efecto medio', 'Topspin medio', 'Backspin largo', 'Sin efecto largo', 'Topspin largo'];   // 2.6
+    const pr = PROFILES.find(p => p.preset === nombres[S.trainPreset]);   // 1.25: el tipo de bola también viene del robot
+    if (pr) TR.profile = pr.id;
+    save('spm_tr2', TR);
+  }
+  const modes = [['manual','Manual'],['sec','Secuencia']];
+  $('tr-mode').innerHTML = modes.map(([k, l]) => `<button class="btn sm ${TR.mode === k ? 'sel' : ''}" data-act="trmode" data-m="${k}" ${k === 'sound' ? 'disabled' : ''}>${l}</button>`).join('');
+  $('tr-delay').textContent = TR.delay.toFixed(1) + ' s';
+  $('tr-count').textContent = TR.count;
+  $('tr-int').textContent = TR.int.toFixed(1) + ' s';
+  if (!$('tr-profile')) $('tr-profile-wrap').innerHTML = tipoSelHtml('id="tr-profile"', TR.profile);   // 2.11
+  else if ($('tr-profile').value !== TR.profile) $('tr-profile').value = TR.profile;
+  syncTipo3($('tr-profile'));
+  $('tr-pos').innerHTML = ['R','K','C','Q','D','X'].map(p => `<button class="btn ${TR.pos === p ? 'sel' : ''}" data-act="trpos" data-p="${p}">${POS_LABEL[p].replace(' ángulo', '')}</button>`).join('');   // 2.12: intermedias y aleatorio R-C-D
+  const m = /(\d+) de (\d+)/.exec(X.train || '');
+  const n = m ? +m[1] : 0;
+  $('tr-prog').textContent = TR.mode === 'manual' ? n + ' / ' + TR.count : X.ballCount + ' bolas';
+  $('tr-txt').textContent = TR.mode === 'manual' ? (X.train || 'Listo para lanzar') : 'Manual: un tiro por toque';
+  $('tr-bar').style.width = TR.mode === 'manual' ? clamp((n / TR.count) * 100, 0, 100) + '%' : '0%';
+  const rr = rollersRunning(X), rb = $('tr-roll');
+  rb.textContent = rr ? 'Apagar rodillos' : 'Encender rodillos';
+  rb.className = 'btn ' + (rr ? 'bad' : 'alt');
+  const seqBox = $('tr-seq');
+  seqBox.hidden = TR.mode !== 'sec';
+  if (TR.mode === 'sec') {
+    seqBox.innerHTML = '<div class="card"><div class="h">Secuencia de bolas</div><button class="btn wide" data-act="seqpreset">Preset: backspin → muerta → topspin</button>' + TR.seq.map((s, i) => `
+      <div class="item" style="display:block">
+        <div class="row"><span class="t">Bola ${i + 1}</span><button class="btn sm" data-act="seqdel" data-i="${i}">Quitar</button></div>
+        ${tipoSelHtml('data-seqf="perfil" data-i="' + i + '"', s.perfil)}
+        <div class="step"><button class="btn" data-act="seqoff" data-i="${i}" data-d="-0.1">−</button><div class="center"><div class="val">${s.off.toFixed(1)} s</div><div class="mut">${i === 0 ? 'desde LANZAR' : 'tras la bola ' + i}</div></div><button class="btn" data-act="seqoff" data-i="${i}" data-d="0.1">+</button></div>
+        <div class="row"><span>Lanzar sin esperar las RPM</span><button class="switch ${s.nw ? 'on' : ''}" data-act="seqnw" data-i="${i}"></button></div>
+      </div>`).join('') +
+      (TR.seq.length < 10 ? '<button class="btn wide" data-act="seqadd">+ Añadir bola</button>' : '') + '</div>';
+  }
+  const lb = $('tr-launch');
+  if (TR.mode === 'sec') { lb.disabled = !online() || !!(cur().exActive); lb.className = 'btn big wide go'; lb.textContent = cur().exActive ? 'EN SERIE' : 'LANZAR'; $('tr-note').textContent = 'Bola 1 a tu retardo; cada bola sale tras el tiempo indicado de la anterior.'; return; }
+  if (TR.mode === 'manual') {
+    lb.disabled = !!X.trainActive || !online();
+    lb.className = 'btn big wide ' + (X.trainActive ? 'bad' : 'go');
+    lb.textContent = X.trainActive ? 'EN SERIE' : 'LANZAR';
+    $('tr-note').textContent = !online() ? 'Sin conexión con el robot.' : !rollersRunning(X) ? 'Al elegir el tipo de golpe los rodillos se configuran y arrancan.' : '';
+  } else {
+    const ready = online() && rollersReady(X) && X.feeder.state === 'DETENIDO';
+    lb.disabled = !ready; lb.className = 'btn big wide go';
+    lb.textContent = 'LANZAR';
+    $('tr-note').textContent = ready ? '' : 'Espera a “Listo” para lanzar.';
+  }
+}
+// Tercera bola por secuencia: bola 1 tras el retardo; cada bola siguiente tras el tiempo de la anterior.
+async function runSecuencia() {
+  const s = TR.seq;
+  const balls = s.map((b, i) => ({perfil: b.perfil, pos: TR.pos, pausa: 0, reps: 1, disp: 0, saque: false,
+    intervalo: i + 1 < s.length ? s[i + 1].off : 0, bsRpm: 0, tsRpm: 0, sinEsperar: !!b.nw}));
+  const ex = {id: 'tercera_seq', name: 'Tercera bola (secuencia)', fav: false, retardo: s[0].off, balls};
+  if (!(await exSave(ex))) return;
+  (window.CUR_EX = ex.name, send({cmd: 'exRun', id: ex.id}));
+  toast('Secuencia en marcha');
+}
+function trSend() { send({cmd: 'trainConfig', delay: TR.delay, count: TR.count, interval: TR.int, pos: TR.pos, preset: PROF(TR.profile).preset}); }
+
+// ---- AJUSTES ----
+function renderAjustes() {
+  const X = cur();
+  renderDiag(X);   // 1.16
+  if (X.fw) $('fw-ver').textContent = 'Versión ' + X.fw;   // 1.20: versión real del firmware
+  $('ang-btns').innerHTML = [['R','Revés',X.angR],['C','Centro',X.angC],['D','Derecha',X.angD]]
+    .map(([k, l, v]) => `<button class="btn sm" data-act="angopen" data-p="${k}">${l} ${v}°</button>`).join('');
+  const ed = $('ang-editor');
+  if (angEdit) {
+    const v = angEdit === 'R' ? X.angR : angEdit === 'C' ? X.angC : X.angD;
+    ed.hidden = false;
+    if (document.activeElement && document.activeElement.id === 'ang-val') { /* 3.3: en uso, no redibujar */ } else ed.innerHTML = `<div class="row" style="margin-top:12px"><span>Ángulo ${({R:'Revés',C:'Centro',D:'Derecha'})[angEdit]}</span><input class="txt" id="ang-val" type="number" min="0" max="180" value="${v}" style="max-width:120px"></div>
+      <div class="grid2" style="margin-top:10px"><button class="btn" data-act="angtest">Probar</button><button class="btn go" data-act="angsave">Guardar</button></div>`;
+  } else ed.hidden = true;
+  renderProfiles(X);
+  renderCalib();
+  const ot = $('off-table');
+  if (!ot.children.length && X.progOff) ot.innerHTML = PROG_NAMES.map((n, i) => `<div class="row" style="margin-top:8px"><span style="flex:1">${n}</span><input class="txt" id="off-${i}" type="number" min="-15" max="15" step="1" value="${X.progOff[i]}" style="width:110px"></div>`).join('');
+  if (!$('cal-max').matches(':focus')) $('cal-max').value = CAL.maxRpm;
+  if (!$('auto-off').matches(':focus')) $('auto-off').value = X.autoOffMin || 0;
+  $('sw-nb').classList.toggle('on', !!X.noBallStop);
+  $('sw-sim').classList.toggle('on', sim);
+  $('tech').innerHTML = `PWM backspin ${X.backspin.current} % · topspin ${X.topspin.current} % · suministro ${X.feederPct} %<br>` +
+    `Sentido: backspin ${X.backspin.direction}, topspin ${X.topspin.direction}<br>Consignas: ${X.backspin.setpointRpm} / ${X.topspin.setpointRpm} RPM`;
+}
+
+// ---- BIBLIOTECA DE EJERCICIOS (60) ----
+// Cada ejercicio: patrón de lanzamientos [perfil, posición, pausa opcional] que se repite hasta completar las bolas.
+// perfil: bs = Corte suave, bf = Corte Fuerte, ns = Bola muerta Suave, nf = Bola muerta Fuerte, ts = Topspin Suave, tf = Topspin Fuerte.
+// posición: R = revés, C = centro, D = derecha, M = ángulo aleatorio, X = aleatorio R-C-D.
+const LIB_CATS = {A:'Control y regularidad', B:'Desplazamiento y Falkenberg', C:'Tercera bola y ataque', D:'Juego corto, recepción y flick', E:'Ataque, bloqueo y contraataque', F:'Aleatoriedad, precisión y resistencia', G:'Distancia de caída (RPM de la calculadora, tubo a 15°)'};
+const LIB_DEF = [
+ {c:'A',n:'Derecha fija',o:'Automatizar el golpe de derecha y la consistencia',l:'principiante',p:[['ns','D']],b:10,iv:1.5},
+ {c:'A',n:'Revés fijo',o:'Control, preparación y regularidad de revés',l:'principiante',p:[['ns','R']],b:10,iv:1.5},
+ {c:'A',n:'Derecha fija con topspin',o:'Desarrollar el topspin de derecha',l:'intermedio',p:[['ts','D']],b:10,iv:1.2},
+ {c:'A',n:'Revés fijo con topspin',o:'Mejorar el ataque de revés',l:'intermedio',p:[['ts','R']],b:10,iv:1.2},
+ {c:'A',n:'Derecha fija contra backspin',o:'Aprender a abrir contra efecto cortado',l:'intermedio',p:[['bs','D']],b:10,iv:1.5},
+ {c:'A',n:'Revés fijo contra backspin',o:'Desarrollar la apertura de revés',l:'intermedio',p:[['bs','R']],b:10,iv:1.5},
+ {c:'A',n:'Regularidad de derecha y revés',o:'Precisión en ambos golpes',l:'principiante',p:[['ns','D'],['ns','R']],b:10,iv:1.5},
+ {c:'A',n:'Dos reveses y dos derechas',o:'Controlar transiciones y desplazamientos',l:'intermedio',p:[['ns','R'],['ns','R'],['ns','D'],['ns','D']],b:12,iv:1.2},
+ {c:'B',n:'Falkenberg clásico',o:'Desplazamiento lateral y transición a la derecha',l:'intermedio',p:[['ts','R'],['ts','R'],['ts','D']],b:12,iv:1.2},
+ {c:'B',n:'Falkenberg con ritmo progresivo',o:'Velocidad de pies sin perder calidad',l:'avanzado',p:[['ts','R'],['ts','R'],['ts','D']],b:12,ramp:[1.5,0.9]},
+ {c:'B',n:'Falkenberg con recuperación',o:'Volver a una posición equilibrada tras la derecha',l:'intermedio',p:[['ts','R'],['ts','R'],['ts','D',1.5]],b:12,iv:1.2},
+ {c:'B',n:'Falkenberg con variación de profundidad',o:'Adaptar los pasos a distintas distancias: corto, medio y largo',l:'avanzado',p:[['t_mc_s','R',0], ['t_co_s','D',0], ['t_me_s','C',0]],b:12,iv:1.2},
+ {c:'B',n:'Falkenberg con variación de efecto',o:'Adaptar el gesto técnico sin romper la secuencia',l:'avanzado',p:[['ts','R'],['bs','R'],['ts','R'],['ts','D']],b:12,iv:1.2},
+ {c:'B',n:'Falkenberg aleatorio',o:'Anticipación y adaptación',l:'avanzado',p:[['ts','R'],['ts','R'],['ts','X']],b:12,iv:1.2},
+ {c:'B',n:'Revés y pivote de derecha',o:'Preparar el pivote y recuperar el equilibrio',l:'intermedio',p:[['ts','R'],['ts','D']],b:10,iv:1.2},
+ {c:'B',n:'Tres puntos',o:'Desplazamiento lateral y selección del golpe',l:'intermedio',p:[['ns','R'],['ns','C'],['ns','D']],b:12,iv:1.2},
+ {c:'B',n:'Dos puntos amplios',o:'Alcance, equilibrio y recuperación',l:'principiante',p:[['ns','R'],['ns','D']],b:10,iv:1.5},
+ {c:'B',n:'Centro, derecha y revés',o:'Adaptarse a distintas posiciones de impacto',l:'intermedio',p:[['ns','C'],['ns','D'],['ns','R']],b:12,iv:1.2},
+ {c:'B',n:'Derecha desde el lado de revés',o:'Pivote y juego dominante de derecha',l:'avanzado',p:[['ns','R'],['ns','C'],['ts','D']],b:12,iv:1.2},
+ {c:'B',n:'Desplazamiento con recuperación variable',o:'Calidad técnica con distintos ritmos',l:'avanzado',p:[['ns','D',0.5],['ns','R',1.5]],b:12,iv:1.2},
+ {c:'C',n:'Saque simulado y apertura de derecha',o:'Apertura de tercera bola a la derecha',l:'intermedio',p:[['bs','D']],b:10,iv:1.5},
+ {c:'C',n:'Saque simulado y apertura de revés',o:'Apertura de tercera bola a revés',l:'intermedio',p:[['bs','R']],b:10,iv:1.5},
+ {c:'C',n:'Apertura de derecha contra backspin largo',o:'Apertura con topspin de derecha',l:'avanzado',p:[['bs','D']],b:10,iv:1.2},
+ {c:'C',n:'Apertura de revés contra backspin largo',o:'Apertura de revés',l:'avanzado',p:[['bs','R']],b:10,iv:1.2},
+ {c:'C',n:'Apertura contra backspin al centro',o:'Decidir entre derecha y revés',l:'avanzado',p:[['bs','C']],b:10,iv:1.2},
+ {c:'C',n:'Apertura y siguiente ataque',o:'Enlazar la apertura con el siguiente golpe',l:'avanzado',p:[['bs','D'],['ts','D']],b:10,iv:1.2},
+ {c:'C',n:'Tercera bola a la zona de revés',o:'Precisión de colocación',l:'avanzado',p:[['bs','C'],['ts','R']],b:10,iv:1.2},
+ {c:'C',n:'Tercera bola a la zona de derecha',o:'Variar la colocación del ataque',l:'avanzado',p:[['bs','C'],['ts','D']],b:10,iv:1.2},
+ {c:'C',n:'Tercera bola al codo',o:'Colocación táctica en la zona de transición',l:'avanzado',p:[['bs','C'],['ts','C']],b:10,iv:1.2},
+ {c:'C',n:'Tercera bola con variación de profundidad',o:'Control de longitud: corto, medio y largo',l:'avanzado',p:[['b_mc_s','C',0], ['b_co_s','D',0], ['b_me_s','R',0]],b:12,iv:1.2},
+ {c:'C',n:'Tercera y quinta bola',o:'Mantener la iniciativa ofensiva',l:'competición',p:[['bs','C'],['ts','D'],['ts','C'],['ts','R'],['ts','D']],b:10,iv:1.0},
+ {c:'C',n:'Tercera bola seguida de bloqueo',o:'Pasar del primer ataque al siguiente golpe',l:'avanzado',p:[['bs','C'],['ns','C']],b:10,iv:1.2},
+ {c:'C',n:'Tercera bola con elección de dirección',o:'Apertura consistente y luego cambio de dirección',l:'competición',p:[['bs','C'],['ts','D'],['bs','C'],['ts','R']],b:12,iv:1.0},
+ {c:'C',n:'Tercera bola aleatoria controlada',o:'Preparar la apertura ante distintas ubicaciones',l:'competición',p:[['bs','X'],['ts','X']],b:12,iv:1.0},
+ {c:'D',n:'Push corto de derecha',o:'Control de longitud y toque',l:'intermedio',p:[['b_mc_s','D',0]],b:10,iv:1.5},
+ {c:'D',n:'Push corto de revés',o:'Sensibilidad de la mano en revés',l:'intermedio',p:[['b_mc_s','R',0]],b:10,iv:1.5},
+ {c:'D',n:'Push largo',o:'Control de longitud y dirección',l:'intermedio',p:[['b_me_s','C',0]],b:10,iv:1.5},
+ {c:'D',n:'Flick de derecha',o:'Atacar sobre pelota corta',l:'avanzado',p:[['t_mc_s','D',0]],b:10,iv:1.2},
+ {c:'D',n:'Flick de revés',o:'Recepción activa de revés',l:'avanzado',p:[['t_mc_s','R',0]],b:10,iv:1.2},
+ {c:'D',n:'Alternancia corto-largo',o:'Lectura de longitud y desplazamiento',l:'intermedio',p:[['b_mc_s','D',0], ['b_me_s','D',0]],b:10,iv:1.2},
+ {c:'D',n:'Recepción simulada con elección de golpe',o:'Elegir push, flick o ataque',l:'competición',p:[['bs','D'],['ts','R'],['ns','C']],b:12,iv:1.0},
+ {c:'D',n:'Pelota corta seguida de pelota larga',o:'Transición rápida hacia el fondo de la mesa',l:'avanzado',p:[['b_mc_s','R',0], ['b_me_s','C',0]],b:10,iv:1.2},
+ {c:'E',n:'Topspin contra bloqueo',o:'Mantener el ataque tras el primer topspin',l:'avanzado',p:[['ts','D'],['ns','C']],b:10,iv:1.2},
+ {c:'E',n:'Topspin de derecha y contraataque',o:'Preparar el siguiente golpe ofensivo',l:'avanzado',p:[['ts','D'],['ts','D'],['ts','R']],b:12,iv:1.0},
+ {c:'E',n:'Topspin de revés y continuación',o:'Mantener la iniciativa',l:'avanzado',p:[['ts','R'],['ts','D']],b:10,iv:1.2},
+ {c:'E',n:'Bloqueo de derecha',o:'Ángulo de la raqueta y colocación',l:'intermedio',p:[['ns','D']],b:10,iv:1.2},
+ {c:'E',n:'Bloqueo de revés',o:'Estabilidad y regularidad',l:'intermedio',p:[['ns','R']],b:10,iv:1.2},
+ {c:'E',n:'Bloqueo activo',o:'Bloqueos activos dirigidos',l:'avanzado',p:[['ns','D'],['ns','R']],b:12,iv:1.0},
+ {c:'E',n:'Contraataque de derecha',o:'Contraataque y control',l:'avanzado',p:[['ts','D']],b:10,iv:1.0},
+ {c:'E',n:'Contraataque de revés',o:'Respuesta activa',l:'avanzado',p:[['ts','R']],b:10,iv:1.0},
+ {c:'E',n:'Ataque y cambio de dirección',o:'Dirigir la pelota bajo presión',l:'competición',p:[['ts','D'],['ts','R']],b:12,iv:1.0},
+ {c:'F',n:'Aleatorio de dos puntos',o:'Reacción y desplazamiento: derecha o revés al azar',l:'intermedio',p:[['ns','Y',0]],b:12,iv:1.2},
+{c:'F',n:'Alternado de dos puntos',o:'Reacción y desplazamiento: derecha y revés alternados',l:'intermedio',p:[['ns','D',0],['ns','R',0]],b:12,iv:1.2},
+ {c:'F',n:'Aleatorio de tres puntos',o:'Toma de decisiones',l:'avanzado',p:[['ns','X']],b:12,iv:1.2},
+ {c:'F',n:'Aleatorio de cuatro puntos',o:'Aumentar la incertidumbre: cuatro puntos al azar (derecha, centro-derecha, centro-revés y revés)',l:'competición',p:[['ns','Z',0]],b:12,iv:1.0},
+ {c:'F',n:'Velocidad progresiva',o:'Rapidez manteniendo precisión',l:'avanzado',p:[['ns','C']],b:12,ramp:[1.5,0.8]},
+ {c:'F',n:'Efecto variable',o:'Adaptar el ángulo y el gesto técnico',l:'avanzado',p:[['ts','C'],['bs','C'],['ns','C']],b:12,iv:1.2},
+ {c:'F',n:'Precisión por zonas',o:'Dirección y profundidad',l:'intermedio',p:[['ns','D'],['ns','R'],['ns','C']],b:12,iv:1.2},
+ {c:'F',n:'Consistencia a una zona',o:'Medir regularidad',l:'principiante',p:[['ns','D']],b:20,iv:1.5},
+ {c:'F',n:'Resistencia por intervalos',o:'Mantener el rendimiento durante la sesión',l:'intermedio',p:[['ns','X']],b:20,iv:1.2,pc:[5,3]},
+ {c:'F',n:'Evaluación de rendimiento',o:'Comparar el rendimiento entre sesiones',l:'competición',p:[['ns','D'],['ns','R'],['ts','C'],['bs','D'],['ts','R']],b:15,iv:1.2},
+ {c:'B',n:'3 Derechas y 1 Revés',o:'Desplazamiento con predominio de derecha',l:'intermedio',p:[['ts','D'],['ts','D'],['ts','D'],['ts','R']],b:12,iv:1.2},
+ {c:'B',n:'3 Revés y 1 Derecha',o:'Desplazamiento con predominio de revés',l:'intermedio',p:[['ts','R'],['ts','R'],['ts','R'],['ts','D']],b:12,iv:1.2},
+ {c:'F',n:'Derecha + aleatorio',o:'Reacción ante una bola de revés o centro tras varias derechas',l:'avanzado',p:[['ts','D',0], ['ts','D',0], ['ts','D',0], ['ts','V',0]],b:12,iv:1.2},
+ {c:'F',n:'Revés + aleatorio',o:'Reacción ante una bola de derecha o centro tras varios reveses',l:'avanzado',p:[['ts','R',0], ['ts','R',0], ['ts','R',0], ['ts','U',0]],b:12,iv:1.2},
+ {c:'C',n:'Backspin suave + 3 topspin suave',o:'Secuencia de tercera bola: apertura y tres ataques',l:'avanzado',p:[['bs','C'],['ts','C'],['ts','C'],['ts','C']],b:12,iv:1.3},
+{c:'A',n:'Calentamiento FH (topspin suave)',o:'Calentamiento de derecha con topspin suave',l:'principiante',p:[['ts','D']],b:10,iv:2.0},
+{c:'A',n:'Calentamiento BH (topspin suave)',o:'Calentamiento de revés con topspin suave',l:'principiante',p:[['ts','R']],b:10,iv:2.0},
+{c:'E',n:'Topspin fuerte a derecha',o:'Ataque fuerte de derecha',l:'avanzado',p:[['tf','D']],b:10,iv:1.2},
+{c:'E',n:'Topspin fuerte a revés',o:'Ataque fuerte de revés',l:'avanzado',p:[['tf','R']],b:10,iv:1.2},
+{c:'D',n:'Saque sin efecto a derecha (medio campo)',o:'Saque corto sin efecto a la derecha',l:'intermedio',p:[['ns','D']],b:10,iv:1.5},
+{c:'C',n:'Saque con backspin profundo a revés',o:'Saque de backspin largo a la zona de revés',l:'avanzado',p:[['b_me_s','R',0]],b:10,iv:1.5},
+{c:'C',n:'Corto sin efecto y topspin profundo',o:'Pelota corta sin efecto seguida de topspin largo a revés',l:'avanzado',p:[['n_mc','C',0], ['t_me_s','R',0]],b:10,iv:1.5},
+{c:'C',n:'Backspin en cualquier zona',o:'Recepción con backspin en posición aleatoria',l:'competición',p:[['bs','X']],b:12,iv:1.5},
+{c:'E',n:'Topspin aleatorio a R-C-D',o:'Topspin en posiciones al azar',l:'avanzado',p:[['ts','X']],b:12,iv:1.2},
+{c:'E',n:'Lob suave a derecha (tubo a 50°)',o:'Vel. media 3.9 m/s (estimada). Caida media 127 cm (estimada). Backspin 700 / topspin 2500 RPM. Fijar el tubo a 50°.',l:'avanzado',p:[['ts','D',0,700,2500]],b:8,iv:2.5},
+{c:'E',n:'Lob suave a revés (tubo a 50°)',o:'Vel. media 3.9 m/s (estimada). Caida media 127 cm (estimada). Backspin 700 / topspin 2500 RPM. Fijar el tubo a 50°.',l:'avanzado',p:[['ts','R',0,700,2500]],b:8,iv:2.5},
+{c:'D',n:'Saque corto con backspin (perfil corto)',o:'Vel. media 3.9 m/s (medida, C05). Caida media 105 cm (a ojo, medida). Backspin 2500 / topspin 800 RPM. Tubo a 15°. Mesa con el borde a 1.0 m.',l:'intermedio',p:[['bs','C',0,2500,800]],b:10,iv:2.0},
+{c:'E',n:'Liftado a derecha (perfil liftado)',o:'Vel. media 5.4 m/s (estimada). Caida media 185 cm (estimada). Backspin 1000 / topspin 3500 RPM. Tubo a 20°.',l:'avanzado',p:[['ts','D',0,1000,3500]],b:10,iv:2.0},
+{c:'E',n:'Lob fuerte a revés (tubo a 60°)',o:'Vel. media 5.1 m/s (estimada). Caida media 177 cm (estimada). Backspin 700 / topspin 3500 RPM. Fijar el tubo a 60°.',l:'avanzado',p:[['ts','R',0,700,3500]],b:8,iv:2.5},
+ {c:'G',n:'Distancias 100-140-180 cm con backspin',o:'Dosificar la distancia de caída con efecto backspin: 100, 140, 180, 140 cm y así sucesivamente',l:'intermedio',p:[['bs','C',0,2280,620],['bs','C',0,2680,1020],['bs','C',0,3040,1390],['bs','C',0,2680,1020]],b:10,iv:2.0},
+ {c:'G',n:'Distancias 100-140-180 cm sin efecto',o:'Dosificar la distancia de caída sin efecto: 100, 140, 180, 140 cm y así sucesivamente',l:'principiante',p:[['ns','C',0,1460,1460],['ns','C',0,1870,1870],['ns','C',0,2240,2240],['ns','C',0,1870,1870]],b:10,iv:2.0},
+ {c:'G',n:'Distancias 100-140-180 cm con topspin',o:'Dosificar la distancia de caída con efecto topspin: 100, 140, 180, 140 cm y así sucesivamente',l:'intermedio',p:[['ts','C',0,650,2300],['ts','C',0,1060,2720],['ts','C',0,1440,3100],['ts','C',0,1060,2720]],b:10,iv:2.0},
+];
+LIB_DEF.sort((a, b) => a.c.localeCompare(b.c));
+// Cada bola que cambia de efecto respecto a la anterior no espera a las RPM (sinEsperar).
+function libBalls(d) {
+  const out = [];
+  for (let i = 0; i < d.b; i++) {
+    const el = d.p[i % d.p.length];
+    const prev = d.p[(i - 1 + d.p.length) % d.p.length];
+    const iv = d.ramp ? d.ramp[0] + (d.ramp[1] - d.ramp[0]) * (d.b > 1 ? i / (d.b - 1) : 0) : d.iv;
+    let pausa = el[2] || 0;
+    if (d.pc && (i + 1) % d.pc[0] === 0) pausa = d.pc[1];
+    const cambio = i > 0 && el[0] !== prev[0];
+    out.push({perfil: el[0], pos: el[1], pausa, reps: 1, disp: 0, saque: false, intervalo: Math.round(iv * 10) / 10, bsRpm: el[3] || 0, tsRpm: el[4] || 0, sinEsperar: cambio});
+  }
+  // 1.2: un cambio de efecto necesita al menos 2.1 s hasta la bola siguiente (medido: 2.06 s sin esperar las RPM)
+  for (let i = 0; i < out.length; i++) {
+    const nxt = out[(i + 1) % out.length];
+    if (nxt.perfil !== out[i].perfil && out[i].intervalo < 2.1) out[i].intervalo = 2.1;
+  }
+  return out;
+}
+function libTags(x) {
+  const t = [];
+  if (new Set(x.balls.map(b => b.perfil)).size > 1) t.push('cambio de efecto');
+  if (x.balls.some(b => b.bsRpm || b.tsRpm)) t.push('cambio de RPM');
+  return t;
+}
+const LIB = LIB_DEF.map((d, i) => ({num: i + 1, id: 'lib_' + (i + 1), cat: d.c, name: d.n, obj: d.o, level: d.l, balls: libBalls(d), def: d}));
+LIB.forEach(x => { x.tags = libTags(x); });
+let LIB_OPEN = null;
+function libItemHtml(x) {
+  const edit = EX.some(e => e.id === x.id) ? '<span class="tag">editado</span>' : '';
+  const tags = x.tags.map(t => `<span class="tag">${t}</span>`).join('');
+  return `<div class="item"><div style="flex:1"><div class="t">${x.num}. ${x.name}${edit}</div><div class="mut">${x.level} · ${x.balls.length} bolas · ${x.balls[0].intervalo} s ${tags}</div></div><button class="btn sm" data-act="libopen" data-id="${x.id}">Abrir</button></div>`;
+}
+function libListHtml() {
+  return Object.keys(LIB_CATS).map(c => `<div class="h" style="margin-top:12px">${c}. ${LIB_CATS[c]}</div>` + LIB.filter(x => x.cat === c && !/prueba|calib|escal/i.test(String(x.name || ''))).map(libItemHtml).join('')).join('');
+}
+function libDetailHtml() {
+  const x = LIB.find(e => e.id === LIB_OPEN);
+  if (!x) return '';
+  const seq = x.balls.map((b, i) => `<div class="mut">${i + 1}. ${PROF(b.perfil).label} · ${POS_LABEL[b.pos]} · ${b.intervalo} s${b.pausa ? ' · pausa ' + b.pausa + ' s' : ''}</div>`).join('');
+  return `<div class="row"><button class="btn sm" data-act="exback">← Lista</button></div>
+    <h2 class="title" style="margin:12px 0 6px">${x.num}. ${x.name}</h2>
+    <p class="mut">${LIB_CATS[x.cat]} · nivel ${x.level}</p>
+    <div class="card"><div class="h">Objetivo</div><div>${x.obj}</div></div>
+    <div class="card"><div class="h">Qué configura el robot</div>
+      <div class="mut">Efecto (perfil de tiro) · posición del servo · frecuencia (intervalo por bola) · pausas · repeticiones.</div>
+      <div class="note">No disponible en este robot: altura, sidespin, longitud corta/larga real, evaluación por cámara e IA.</div></div>
+    <div class="card"><div class="h">Secuencia (${x.balls.length} bolas)</div>${seq}</div>
+    <div class="grid2"><button class="btn" data-act="libcopy" data-id="${x.id}">Copiar a mis ejercicios</button><button class="btn go" data-act="librun" data-id="${x.id}">Ejecutar en el robot</button></div>`;
+}
+function libExFrom(x) { return {id: x.id, name: x.num + '. ' + x.name, fav: false, balls: JSON.parse(JSON.stringify(x.balls))}; }
+
+// ---- Plantillas copiables (10 bolas editables) ----
+const PROG_NAMES = ['Derecha – Revés','Falkenberg','Derecha – Centro – Revés','3 Derechas y 1 Revés','3 Revés y 1 Derecha','Derecha + aleatorio','Revés + aleatorio','Aleatorio D-C-R','Aleatorio toda la mesa'];
+const TPL_PATTERN = {t0:['D','R'], t1:['R','R','D'], t2:['D','C','R','C'], t3:['D','D','D','R'], t4:['R','R','R','D'], t5:['D','D','D','X'], t6:['R','R','R','X'], t7:['X'], t8:['M']};
+function tplToEx(t) {
+  const balls = [];
+  if (t.seq) { balls.push({perfil:'bs', pos:'C', pausa:0, reps:1, disp:0, saque:false}); for (let i = 0; i < 3; i++) balls.push({perfil:'ts', pos:'C', pausa:0, reps:1, disp:0, saque:false}); }
+  else { const pat = TPL_PATTERN[t.id] || ['C']; for (let i = 0; i < 10; i++) balls.push({perfil: profileId, pos: pat[i % pat.length], pausa:0, reps:1, disp:0, saque:false}); }
+  return {id: uid(), name: t.name + ' (mía)', fav: false, balls};
+}
+// ---- Perfiles de tiro editables (RPM backspin y topspin) ----
+function renderProfiles(X) {
+  const box = $('prof-table');
+  if (box.children.length || !X.presets) return;
+  box.innerHTML = X.presets.map((p, i) => `<div class="row" style="margin-top:8px"><span style="flex:1">${p.n}</span><input class="txt" id="pf-b-${i}" type="number" min="0" max="6000" step="50" value="${p.b}" style="width:110px"><input class="txt" id="pf-t-${i}" type="number" min="0" max="6000" step="50" value="${p.t}" style="width:110px"></div>`).join('');
+}
+
+// ---- Copia automatica de registros en el navegador (1.12) ----
+const REG_DB = (typeof indexedDB !== 'undefined') ? new Promise((res, rej) => {
+  const r = indexedDB.open('spm_registros', 1);
+  r.onupgradeneeded = () => r.result.createObjectStore('snap', {keyPath: 'key'});
+  r.onsuccess = () => res(r.result);
+  r.onerror = () => rej(r.error);
+}) : null;
+async function regPut(obj) {
+  const db = await REG_DB;
+  return new Promise((res, rej) => { const tx = db.transaction('snap', 'readwrite'); tx.objectStore('snap').put(obj); tx.oncomplete = res; tx.onerror = () => rej(tx.error); });
+}
+async function regTodos() {
+  const db = await REG_DB;
+  return new Promise((res, rej) => { const q = db.transaction('snap').objectStore('snap').getAll(); q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error); });
+}
+async function regBorrarTodo() {
+  const db = await REG_DB;
+  return new Promise((res, rej) => { const tx = db.transaction('snap', 'readwrite'); tx.objectStore('snap').clear(); tx.oncomplete = res; tx.onerror = () => rej(tx.error); });
+}
+const REG = {sesion: null, filas: {ev: 0, mu: 0}, estado: null};   // estado: totales vistos por ultima vez (1.15)
+async function leerRegistro(ruta) {
+  const texto = await (await fetch(ruta, {cache: 'no-store'})).text();
+  const lineas = texto.split(/\r?\n/).filter(l => l.trim().length);
+  return {texto, filas: Math.max(0, lineas.length - 1)};
+}
+async function autoRegistro() {
+  if (S && (S.exActive || S.trainActive || S.sequencePending)) return;   // 2.5: sin descarga mientras hay una actividad (bloqueaba el robot cada 5 s)
+  if (!sim && online() && !REG.hora) { REG.hora = true; send({cmd: 'setTime', epoch: Math.floor(Date.now() / 1000)}); }
+  if (sim || !online() || !REG_DB) return;
+  try {
+    // 1.15: consulta ligera; solo se descargan los CSV si el robot registró algo nuevo.
+    const est = await (await fetch('/registros/estado', {cache: 'no-store'})).json();
+    if (REG.estado && est.ev === REG.estado.ev && est.mu === REG.estado.mu) return;
+    const ev = await leerRegistro('/registros/eventos.csv');
+    const mu = await leerRegistro('/registros/muestras.csv');
+    REG.estado = est;
+    if (ev.filas === 0 && mu.filas === 0) return;
+    // Si el robot tiene menos filas que antes, se reinicio o se borro el registro: nueva sesion
+    const reinicio = ev.filas < REG.filas.ev || mu.filas < REG.filas.mu;
+    if (REG.sesion === null || reinicio) REG.sesion = Date.now();
+    REG.filas = {ev: ev.filas, mu: mu.filas};
+    const ahora = Date.now();
+    if (ev.filas > 0) await regPut({key: REG.sesion + '|ev', sesion: REG.sesion, tipo: 'ev', filas: ev.filas, texto: ev.texto, actualizado: ahora});
+    if (mu.filas > 0) await regPut({key: REG.sesion + '|mu', sesion: REG.sesion, tipo: 'mu', filas: mu.filas, texto: mu.texto, actualizado: ahora});
+    pintarRegistros();
+  } catch (_) { /* sin conexion en este momento: se reintenta */ }
+}
+async function pintarRegistros() {
+  const box = $('reg-guardados');
+  if (!box || !REG_DB) { if (box) box.textContent = 'Este navegador no permite guardar registros.'; return; }
+  const todos = (await regTodos()).sort((a, b) => b.sesion - a.sesion);
+  if (!todos.length) { box.innerHTML = '<div class="mut">Todavía no hay registros copiados.</div>'; return; }
+  const sesiones = {};
+  todos.forEach(r => { (sesiones[r.sesion] = sesiones[r.sesion] || []).push(r); });
+  box.innerHTML = Object.keys(sesiones).map(s => {
+    const f = new Date(+s).toLocaleString();
+    const filas = sesiones[s].map(r => `<button class="btn sm" data-act="regdl" data-key="${r.key}">${r.tipo === 'ev' ? 'Eventos' : 'Muestras'} (${r.filas} filas)</button>`).join(' ');
+    return `<div class="item" style="display:block"><div class="t">Sesión ${f}</div><div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">${filas}</div></div>`;
+  }).join('');
+}
+async function regDescargar(key) {
+  const todos = await regTodos();
+  const r = todos.find(x => x.key === key);
+  if (!r) return toast('No se encontró ese registro');
+  const f = new Date(r.sesion), p = n => String(n).padStart(2, '0');
+  const nombre = (r.tipo === 'ev' ? 'eventos' : 'muestras') + '_' + f.getFullYear() + '-' + p(f.getMonth() + 1) + '-' + p(f.getDate()) + '_' + p(f.getHours()) + '-' + p(f.getMinutes()) + '.csv';
+  const u = URL.createObjectURL(new Blob([r.texto], {type: 'text/csv'}));
+  const a = document.createElement('a'); a.href = u; a.download = nombre; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(u), 2000);
+}
+async function regBorrar() {
+  if (!confirm('¿Borrar las copias guardadas en este navegador? El robot no se modifica.')) return;
+  await regBorrarTodo(); pintarRegistros(); toast('Copias borradas');
+}
+setInterval(autoRegistro, 30000);   // 2.5: antes 5 s
+pintarRegistros();
+// ---- Calculadora de configuración (modelo calibrado: factor 0.666) ----
+const CALC = {R: 0.0346, KV: 0.64, G: 9.81, RHO: 1.2, CD: 0.40, M: 0.0027, RB: 0.020, E: 0.15, CLF: 0.20, H0: 1.02, MESA: 0.81};   // 2.10: factor de salida ajustado con la velocidad medida por el sensor (5.1 m/s a 2200 RPM)
+CALC.A = Math.PI * CALC.RB * CALC.RB;
+const calcSup = rpm => rpm * 2 * Math.PI / 60 * CALC.R;
+const calcRpm = vs => vs / (2 * Math.PI / 60 * CALC.R);
+function calcTrayectoria(bs, ts, angDeg) {
+  const diff = calcSup(bs) - calcSup(ts), sgn = diff >= 0 ? 1 : -1;
+  const v0 = CALC.KV * (calcSup(bs) + calcSup(ts)) / 2, omega = CALC.E * Math.abs(diff) / CALC.RB;
+  const th = angDeg * Math.PI / 180;
+  let x = 0, y = CALC.H0, vx = v0 * Math.cos(th), vy = v0 * Math.sin(th), ymax = y;
+  const dt = 1e-3, yl = CALC.MESA + CALC.RB;
+  for (let k = 0; k < 8000 && x < 6; k++) {
+    const v = Math.hypot(vx, vy), S = omega * CALC.RB / Math.max(v, 0.1), CL = Math.min(CALC.CLF * S, 0.3);
+    const aD = 0.5 * CALC.RHO * CALC.CD * CALC.A * v / CALC.M, aM = 0.5 * CALC.RHO * CALC.A * CL * v * v / CALC.M;
+    const nx = -vy / v, ny = vx / v;
+    const ax = -aD * vx + sgn * aM * nx, ay = -CALC.G - aD * vy + sgn * aM * ny;
+    const vxN = vx + ax * dt, vyN = vy + ay * dt, xN = x + vxN * dt, yN = y + vyN * dt;
+    if (yN > ymax) ymax = yN;
+    if (vyN < 0 && yN <= yl) {
+      const f = (y - yl) / (y - yN + 1e-12);
+      return {x: x + (xN - x) * f, v0, ymax, desc: Math.atan2(-vyN, vxN) * 180 / Math.PI};
+    }
+    x = xN; y = yN; vx = vxN; vy = vyN;
+  }
+  return {x: null, v0, ymax, desc: null};
+}
+// 2.7: tabla de combinaciones calibrada a 15° (suave medido; medio y fuerte estimados)
+const COMBOS = [{"id": "b_mc_s", "name": "Backspin muy corto 0.8 m suave", "bs": 2230, "ts": 580, "limitado": false, "estimado": false}, {"id": "b_mc_m", "name": "Backspin muy corto 0.8 m medio", "bs": 2310, "ts": 500, "limitado": true, "estimado": true}, {"id": "b_mc_f", "name": "Backspin muy corto 0.8 m fuerte", "bs": 2310, "ts": 500, "limitado": true, "estimado": true}, {"id": "t_mc_s", "name": "Topspin muy corto 0.8 m suave", "bs": 610, "ts": 2260, "limitado": false, "estimado": false}, {"id": "t_mc_m", "name": "Topspin muy corto 0.8 m medio", "bs": 500, "ts": 2370, "limitado": true, "estimado": true}, {"id": "t_mc_f", "name": "Topspin muy corto 0.8 m fuerte", "bs": 500, "ts": 2370, "limitado": true, "estimado": true}, {"id": "n_mc", "name": "Sin efecto muy corto 0.8 m", "bs": 1500, "ts": 1500, "limitado": false, "estimado": false}, {"id": "b_co_s", "name": "Backspin corto 1.2 m suave", "bs": 2650, "ts": 990, "limitado": false, "estimado": false}, {"id": "b_co_m", "name": "Backspin corto 1.2 m medio", "bs": 3060, "ts": 580, "limitado": false, "estimado": true}, {"id": "b_co_f", "name": "Backspin corto 1.2 m fuerte", "bs": 3140, "ts": 500, "limitado": true, "estimado": true}, {"id": "t_co_s", "name": "Topspin corto 1.2 m suave", "bs": 1220, "ts": 2870, "limitado": false, "estimado": false}, {"id": "t_co_m", "name": "Topspin corto 1.2 m medio", "bs": 800, "ts": 3290, "limitado": false, "estimado": true}, {"id": "t_co_f", "name": "Topspin corto 1.2 m fuerte", "bs": 500, "ts": 3590, "limitado": true, "estimado": true}, {"id": "n_co", "name": "Sin efecto corto 1.2 m", "bs": 1930, "ts": 1930, "limitado": false, "estimado": false}, {"id": "b_me_s", "name": "Backspin medio 1.6 m suave", "bs": 3060, "ts": 1410, "limitado": false, "estimado": false}, {"id": "b_me_m", "name": "Backspin medio 1.6 m medio", "bs": 3470, "ts": 990, "limitado": false, "estimado": true}, {"id": "b_me_f", "name": "Backspin medio 1.6 m fuerte", "bs": 3890, "ts": 580, "limitado": false, "estimado": true}, {"id": "t_me_s", "name": "Topspin medio 1.6 m suave", "bs": 1820, "ts": 3480, "limitado": false, "estimado": false}, {"id": "t_me_m", "name": "Topspin medio 1.6 m medio", "bs": 1410, "ts": 3890, "limitado": false, "estimado": true}, {"id": "t_me_f", "name": "Topspin medio 1.6 m fuerte", "bs": 1000, "ts": 4310, "limitado": false, "estimado": true}, {"id": "n_me", "name": "Sin efecto medio 1.6 m", "bs": 2360, "ts": 2360, "limitado": false, "estimado": false}, {"id": "b_la_s", "name": "Backspin largo 2.0 m suave", "bs": 3470, "ts": 1820, "limitado": false, "estimado": false}, {"id": "b_la_m", "name": "Backspin largo 2.0 m medio", "bs": 3890, "ts": 1410, "limitado": false, "estimado": true}, {"id": "b_la_f", "name": "Backspin largo 2.0 m fuerte", "bs": 4300, "ts": 990, "limitado": false, "estimado": true}, {"id": "t_la_s", "name": "Topspin largo 2.0 m suave", "bs": 2430, "ts": 4090, "limitado": false, "estimado": false}, {"id": "t_la_m", "name": "Topspin largo 2.0 m medio", "bs": 2020, "ts": 4500, "limitado": false, "estimado": true}, {"id": "t_la_f", "name": "Topspin largo 2.0 m fuerte", "bs": 1600, "ts": 4910, "limitado": false, "estimado": true}, {"id": "n_la", "name": "Sin efecto largo 2.0 m", "bs": 2790, "ts": 2790, "limitado": false, "estimado": false}];
+// Intensidad del efecto fija (m/s de diferencia entre rodillos): la de los presets suaves.
+const CALC_DIF = 12.9;
+// Dado el ángulo y la distancia de caída, busca por bisección la velocidad de superficie media
+// que hace caer la bola a esa distancia; de ahí salen las RPM de cada rodillo.
+function calcDesde(distCm, angDeg, tipo, dif = CALC_DIF) {
+  const errores = [], avisos = [];
+  const d = tipo === 'sin efecto' ? 0 : (tipo === 'backspin' ? dif : -dif);
+  const objetivo = distCm / 100;
+  const rpmDe = avg => ({bs: calcRpm(avg + d / 2), ts: calcRpm(avg - d / 2)});
+  const f = avg => { const r = rpmDe(avg); const t = calcTrayectoria(r.bs, r.ts, angDeg); return t.x === null ? 1 : t.x - objetivo; };
+  let lo = Math.abs(d) / 2 + 0.05, hi = calcSup(6000) - Math.abs(d) / 2;
+  if (f(lo) > 0) errores.push('Con este efecto la bola cae más lejos que la distancia pedida. Baja el ángulo, o usa sin efecto.');
+  else if (f(hi) < 0) errores.push('Con 6000 RPM la bola no llega a esa distancia. Sube el ángulo o acorta la distancia.');
+  let res = null, r = null;
+  if (errores.length === 0) {
+    for (let k = 0; k < 50; k++) { const m = (lo + hi) / 2; if (f(m) > 0) hi = m; else lo = m; }
+    r = rpmDe((lo + hi) / 2); res = calcTrayectoria(r.bs, r.ts, angDeg);
+  }
+  if (res && r.bs > 6000) errores.push('Un rodillo pasa de 6000 RPM.');
+  if (res && angDeg > 45) avisos.push('Tubo a más de 45°: es un lob, con más variación en la caída.');
+  return {errores, avisos, res, bs: res ? Math.round(r.bs / 10) * 10 : null, ts: res ? Math.round(r.ts / 10) * 10 : null, dif: tipo === 'sin efecto' ? 0 : CALC_DIF};
+}
+function calcularUI() {
+  const dist = +$('calc-dist').value / 100, ang = +$('calc-ang').value, efe = $('calc-efe').value, inten = $('calc-int').value;
+  CALCUI.dist = +$('calc-dist').value; CALCUI.ang = ang; CALCUI.tipo = efe; CALCUI.intensidad = inten;
+  $('calc-int').disabled = efe === 'sin efecto';
+  let h = '', bs = null, ts = null;
+  if (ang === 15) {
+    const id = efe === 'sin efecto' ? 'n_' + ({0.8:'mc',1.2:'co',1.6:'me',2:'la'}[dist.toFixed(1)] || 'co') : (efe === 'backspin' ? 'b' : 't') + '_' + ({0.8:'mc',1.2:'co',1.6:'me',2:'la'}[dist.toFixed(1)] || 'co') + '_' + inten;
+    const c = COMBOS.find(x => x.id === id);
+    if (c) { bs = c.bs; ts = c.ts; }
+    if (c && c.limitado) h += '<div class="warn">⚠ Esta intensidad no se puede alcanzar a esa velocidad: se usa la rotación máxima posible.</div>';
+    if (c && c.estimado) h += '<div class="warn">⚠ Valor estimado: la intensidad media y fuerte todavía no está medida. Calibrar con la prueba de efecto.</div>';
+  } else {
+    h += `<div class="warn">⚠ Ángulo distinto de 15°: el cálculo es un modelo sin calibrar a ese ángulo. Mide a ese ángulo para ajustarlo.</div>`;
+    const r = calcDesde(CALCUI.dist, ang, efe, inten === 'f' ? 12 : inten === 'm' ? 9 : 6);
+    if (r.errores.length === 0) { bs = r.bs; ts = r.ts; }
+    else r.errores.forEach(e => h += `<div class="bad">✖ ${e}</div>`);
+  }
+  if (bs != null) h = `<div style="font-size:18px"><b>Backspin: ${bs} RPM</b> · <b>Topspin: ${ts} RPM</b></div>` + h;
+  CALCUI.bs = bs; CALCUI.ts = ts;
+  $('calc-res').innerHTML = h;
+}
+// ---- Calculadora 1.14 ----
+const CALCUI = Object.assign({bs: 2750, ts: 2750, ang: 15}, load('spm_conf', {}));
+const CALCLIM = {bs: [0, 6000, 50, 8], ts: [0, 6000, 50, 8], ang: [0, 60, 0.5, 0.25]};   // [min, max, paso, RPM o grados por px]
+function dragCtl(id, etiqueta) {
+  const [mn, mx, paso, sens] = CALCLIM[id];
+  const dec = paso < 1 ? 1 : 0;
+  return `<div class="row" style="margin-top:8px"><span class="mut" style="width:130px">${etiqueta}</span><button class="btn sm" data-act="dragstep" data-id="${id}" data-d="-${paso}">−</button><div class="dragval" id="drag-${id}" data-drag="${id}" style="flex:1;text-align:center;padding:9px;border-radius:10px;background:#0a1324;border:1px solid var(--line);touch-action:none;cursor:ew-resize;font-weight:700;user-select:none">${CALCUI[id].toFixed(dec)}</div><button class="btn sm" data-act="dragstep" data-id="${id}" data-d="${paso}">+</button></div><div class="mut" style="font-size:11px;margin-top:2px">arrastra el valor a la izquierda o derecha para cambiarlo</div>`;
+}
+function calcSetVal(id, v) {
+  const [mn, mx, paso] = CALCLIM[id];
+  const q = Math.round(v / paso) * paso;
+  CALCUI[id] = Math.min(mx, Math.max(mn, q));
+  const el = $('drag-' + id);
+  if (el) el.textContent = CALCUI[id].toFixed(paso < 1 ? 1 : 0);
+}
+function calcRender() {
+  const box = $('calc-form');
+  if (!box) return;
+  box.innerHTML = `
+    <label class="mut">Distancia de caída</label>
+    <select class="txt" id="calc-dist"><option value="80">Muy corto 0.8 m</option><option value="120">Corto 1.2 m</option><option value="160">Medio 1.6 m</option><option value="200">Largo 2.0 m</option></select>
+    <label class="mut">Efecto</label>
+    <select class="txt" id="calc-efe"><option value="backspin">Backspin</option><option value="sin efecto">Sin efecto</option><option value="topspin">Topspin</option></select>
+    <label class="mut">Intensidad del efecto</label>
+    <select class="txt" id="calc-int"><option value="s">Suave</option><option value="m">Medio</option><option value="f">Fuerte</option></select>
+    <label class="mut">Ángulo del tubo (grados, por defecto 15)</label>
+    <input class="txt" id="calc-ang" type="number" min="0" max="60" step="0.5" value="${CALCUI.ang ?? 15}">`;
+  $('calc-dist').value = CALCUI.dist ?? 120;
+  $('calc-efe').value = CALCUI.tipo ?? 'backspin';
+  $('calc-int').value = CALCUI.intensidad ?? 's';
+  $('calc-res').innerHTML = '';
+}
+function calcGo() { calcularUI(); }
+function calcUsar() {
+  if (CALCUI.bs == null || CALCUI.ts == null) return toast('Primero calcula una configuración válida');
+  localStorage.setItem('spm_conf', JSON.stringify({bs: CALCUI.bs, ts: CALCUI.ts, ang: CALCUI.ang, dist: CALCUI.dist, tipo: CALCUI.tipo}));
+  send({cmd: 'setRPM', motor: 'backspin', value: CALCUI.bs});
+  send({cmd: 'setRPM', motor: 'topspin', value: CALCUI.ts});
+  toast(`Enviado al robot: backspin ${CALCUI.bs}, topspin ${CALCUI.ts}`);
+}
+// arrastre: se mueve solo al arrastrar, desde el valor actual
+let DRAG = null;
+document.addEventListener('pointerdown', e => {
+  const el = e.target.closest && e.target.closest('[data-drag]');
+  if (!el) return;
+  DRAG = {id: el.dataset.drag, x0: e.clientX, v0: CALCUI[el.dataset.drag], moved: false};
+  el.setPointerCapture && el.setPointerCapture(e.pointerId);
+});
+document.addEventListener('pointermove', e => {
+  if (!DRAG) return;
+  const dx = e.clientX - DRAG.x0;
+  if (!DRAG.moved && Math.abs(dx) < 6) return;          // umbral: un toque no mueve el valor
+  DRAG.moved = true;
+  calcSetVal(DRAG.id, DRAG.v0 + dx * CALCLIM[DRAG.id][3]);
+});
+document.addEventListener('pointerup', () => { DRAG = null; });
+// ---- Calibración de lanzamientos (1.3): 12 configuraciones de RPM por bola, 10 bolas cada una ----
+const CALIB = [
+  {mesa:50, id:'C05', fam:'Corto',    base:'bs', bs:2500, ts:800,  ang:15, nota:'Saque corto con backspin (propuesto)', ind:'Mesa a 0.4 m. Si cae antes del borde, acerca la mesa; anota el punto de bote.'},
+  {mesa:50, id:'C13', fam:'Lob',      base:'ts', bs:700,  ts:2500, ang:50, nota:'Lob suave a 50°', ind:'Fija el tubo a 50° con marca física. Mesa a 1.0 m del tubo (cubre de 1.0 a 2.2 m). Cae a unos 1.5 m.'},
+  {mesa:50, id:'C06', fam:'Muerta',   base:'ns', bs:2000, ts:2000, ang:15, nota:'Sin efecto suave (referencia)', ind:'Sin efecto. Rebote más bajo que el backspin: anótalo como referencia.'},
+  {mesa:50, id:'C12', fam:'Topspin',  base:'ts', bs:1000, ts:3000, ang:15, nota:'Topspin medio', ind:'Compara con C10 y C11. Anota el punto de bote.'},
+  {mesa:100, id:'C04', fam:'Backspin', base:'bs', bs:2500, ts:1500, ang:15, nota:'Corte lento', ind:'Cae más cerca del tubo. Si cae antes de la mesa, acerca la mesa.'},
+  {mesa:100, id:'C03', fam:'Backspin', base:'bs', bs:3500, ts:1000, ang:15, nota:'Corte intermedio', ind:'Igual que C01. Compara su caída con C01 y C02.'},
+  {mesa:100, id:'C14', fam:'Lob',      base:'ts', bs:700,  ts:3500, ang:60, nota:'Lob fuerte a 60°', ind:'Fija el tubo a 60°. Mesa a 1.0 m del tubo. Cae a unos 1.9 m; si cae fuera, prueba 55°.'},
+  {mesa:100, id:'C10', fam:'Topspin',  base:'ts', bs:700,  ts:4250, ang:15, nota:'Topspin suave (referencia)', ind:'Cae lejos. Si cae fuera del borde lejano (1.7 m), aleja la mesa o baja el ángulo.'},
+  {mesa:100, id:'C09', fam:'Liftado',  base:'ts', bs:1000, ts:3500, ang:20, nota:'Liftado (propuesto)', ind:'Tubo a 20°. Si la bola cae corta, prueba 25° y anótalo en la tabla.'},
+  {mesa:150, id:'C11', fam:'Topspin',  base:'ts', bs:700,  ts:4500, ang:15, nota:'Topspin fuerte (referencia)', ind:'El más largo de la familia. Mesa a 0.4 m; si sale de la mesa, reduce el ángulo a 10°.'},
+  {mesa:150, id:'C01', fam:'Backspin', base:'bs', bs:4250, ts:700,  ang:15, nota:'Corte suave (referencia)', ind:'Referencia de la familia. Mesa a 0.4–0.5 m. Anota distancia y rebote de cada bola.'},
+  {mesa:150, id:'C02', fam:'Backspin', base:'bs', bs:4500, ts:700,  ang:15, nota:'Corte fuerte', ind:'Igual que C01. Si cae fuera de la mesa, aleja la mesa 10 cm.'},
+  {mesa:150, id:'C07', fam:'Muerta',   base:'ns', bs:2750, ts:2750, ang:15, nota:'Sin efecto fuerte (referencia)', ind:'Igual que C06 a más velocidad. Anota si la bola se desvía.'},
+  {mesa:200, id:'C08', fam:'Muerta',   base:'ns', bs:3500, ts:3500, ang:15, nota:'Sin efecto rápida', ind:'Igual que C07. Prueba la distancia máxima de la mesa.'},
+  {mesa:0, id:'R01', fam:'Recuperacion', base:'bs', bs:4250, ts:700, ang:15, iv:0.6, sin:true, nota:'Prueba de recuperacion del suministro (10 bolas a 0.6 s, sin esperar RPM)', ind:'No es de distancia. Sirve para medir la caida de RPM y la recuperacion tras cada bola (analizar_recuperacion.py).'}
+];
+const CALIB_N = 10;
+function calibBalls() {
+  const out = [];
+  CALIB.forEach(c => { for (let k = 0; k < CALIB_N; k++) out.push({perfil: c.base, pos: 'C', pausa: 0, reps: 1, disp: 0, saque: false, intervalo: c.iv || 2.2, bsRpm: c.bs, tsRpm: c.ts, sinEsperar: !!c.sin}); });
+  return out;
+}
+function renderCalib() {
+  const box = $('calib-tabla');
+  if (!box || box.children.length) return;
+  let html = '', grupo = null;
+  CALIB.forEach(c => {
+    if (c.mesa !== grupo) {
+      grupo = c.mesa;
+      const etiqueta = c.mesa === 0 ? 'Recuperacion del suministro (sin mesa)' : `Grupo mesa a ${(c.mesa / 100).toFixed(1)} m del lanzador`;
+      html += `<div class="h" style="margin-top:14px">${etiqueta}</div>`;
+    }
+    html += `<div class="item" style="display:block"><div class="row"><div style="flex:1"><div class="t">${c.id} · ${c.fam} · ${c.nota}</div><div class="mut">backspin ${c.bs} / topspin ${c.ts} RPM · tubo ${c.ang}°</div></div><button class="btn sm go" data-act="calibone" data-id="${c.id}">Ejecutar</button></div><div class="note">${c.ind}</div></div>`;
+  });
+  box.innerHTML = html;
+}
+function calibCsv() {
+  const rows = ['orden,config,familia,perfil_base,backspin_rpm,topspin_rpm,angulo_tubo_grados,mesa_borde_cm,nota,velocidad_m_s,distancia_caida_cm,altura_rebote_cm,efecto_1_a_5,observaciones'];
+  let o = 1;
+  CALIB.forEach(c => { for (let k = 0; k < CALIB_N; k++) rows.push([o++, c.id, c.fam, c.base, c.bs, c.ts, c.ang, c.mesa, '"' + c.nota + '"', '', '', '', '', ''].join(',')); });
+  return rows.join('\n');
+}
+async function runCalibracion(cfgId, n) {
+  if (sim) return toast('La calibración necesita el robot conectado');
+  if (RUN.active) return toast('Ya hay una prueba en marcha');
+  const c = CALIB.find(x => x.id === cfgId);
+  const balls = [];
+  for (let k = 0; k < n; k++) balls.push({perfil: c.base, pos: 'C', pausa: 0, reps: 1, disp: 0, saque: false, intervalo: c.iv || 2.2, bsRpm: c.bs, tsRpm: c.ts, sinEsperar: !!c.sin});
+  const ex = {id: 'calib_' + c.id, name: 'Calibración ' + c.id + ' · ' + c.nota, fav: false, balls};
+  await api.put(ex);
+  RUN = {abort: false, active: true, label: 'Calibración ' + c.id, idx: 0, total: 1};
+  const estado = $('calib-estado');
+  // Muestra el avance que reporta el robot: "Bola k de N"
+  const reloj = setInterval(() => {
+    if (cur().exActive) estado.textContent = 'Prueba ' + c.id + ' · ' + (cur().exText || 'en marcha');
+  }, 250);
+  try {
+    send({cmd: 'marca', texto: 'CAL ' + c.id + ' inicio'});
+    (window.CUR_EX = ex.name, send({cmd: 'exRun', id: ex.id}));
+    const started = await waitFor(() => RUN.abort || cur().exActive, 10000);
+    if (!started) {
+      estado.textContent = 'La prueba ' + c.id + ' no arrancó: revisa los rodillos';
+      toast('La prueba ' + c.id + ' no arrancó');
+      return;
+    }
+    await waitFor(() => RUN.abort || !cur().exActive, 600000);
+    send({cmd: 'marca', texto: 'CAL ' + c.id + ' fin'});
+  } finally {
+    clearInterval(reloj);
+    RUN.active = false;
+  }
+  const msg = RUN.abort ? 'Prueba ' + c.id + ' detenida' : 'Prueba ' + c.id + ' finalizada (' + n + ' bolas)';
+  estado.textContent = msg;
+  toast(msg);
+}
+function calibDescargar() {
+  const u = URL.createObjectURL(new Blob([calibCsv()], {type: 'text/csv'}));
+  const a = document.createElement('a'); a.href = u; a.download = 'tabla_calibracion_lanzamientos.csv';
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 2000);
+}
+
+// ---- Protocolo de prueba (ejercicios guardados en el robot, con marcas en el registro) ----
+const PROTO = [
+  {name: 'P0 calibración de sincronía: 10 bolas, perfil fijo, cada 2 s', balls: Array.from({length: 10}, () => ({perfil:'ns', pos:'C', pausa:0, reps:1, disp:0, saque:false, intervalo:2.0, bsRpm:0, tsRpm:0, sinEsperar:false}))},
+  {name: 'Corte suave, 10 bolas, 1.0 s', balls: Array.from({length: 10}, () => ({perfil:'bs', pos:'C', pausa:0, reps:1, disp:0, saque:false, intervalo:1.0, bsRpm:0, tsRpm:0}))},
+  {name: 'Alterna Corte suave / Topspin suave, 10 bolas, 1.0 s', balls: Array.from({length: 10}, (_, i) => ({perfil: i % 2 ? 'ts' : 'bs', pos:'C', pausa:0, reps:1, disp:0, saque:false, intervalo:1.0, bsRpm:0, tsRpm:0}))},
+  {name: 'Topspin suave, 10 bolas, 1.0 s', balls: Array.from({length: 10}, () => ({perfil:'ts', pos:'C', pausa:0, reps:1, disp:0, saque:false, intervalo:1.0, bsRpm:0, tsRpm:0}))},
+  {name: 'Puntos de caída: derecha, centro, revés', balls: ['D','C','R'].map(p => ({perfil:'ts', pos:p, pausa:0, reps:1, disp:0, saque:false, intervalo:1.5, bsRpm:0, tsRpm:0}))},
+  {name: 'Topspin suave, 10 bolas, 1.5 s', balls: Array.from({length: 10}, () => ({perfil:'ts', pos:'C', pausa:0, reps:1, disp:0, saque:false, intervalo:1.5, bsRpm:0, tsRpm:0}))},
+  {name: 'Backspin suave → topspin suave a 1.2 s (espera RPM)', balls: Array.from({length: 10}, (_, i) => ({perfil: i % 2 ? 'ts' : 'bs', pos:'C', pausa:0, reps:1, disp:0, saque:false, intervalo:1.2, bsRpm:0, tsRpm:0, sinEsperar:false}))},
+  {name: 'Backspin suave → topspin suave a 1.2 s (sin esperar RPM)', balls: Array.from({length: 10}, (_, i) => ({perfil: i % 2 ? 'ts' : 'bs', pos:'C', pausa:0, reps:1, disp:0, saque:false, intervalo:1.2, bsRpm:0, tsRpm:0, sinEsperar: i % 2 === 1}))}
+];
+async function runProtocol() {
+  if (sim) return toast('El protocolo necesita el robot conectado');
+  if (RUN.active) return toast('Ya hay una prueba en marcha');
+  RUN = {abort: false, active: true, label: 'Protocolo', idx: 0, total: PROTO.length};
+  try {
+    for (let k = 0; k < PROTO.length && !RUN.abort; k++) {
+      RUN.idx = k + 1; $('proto-txt').textContent = 'Prueba ' + (k + 1) + ' de ' + PROTO.length + ': ' + PROTO[k].name;
+      const id = 'prueba_' + (k + 1);
+      await api.put({id, name: 'Prueba ' + (k + 1) + ': ' + PROTO[k].name, fav: false, balls: PROTO[k].balls});
+      send({cmd: 'marca', texto: 'P' + k + ' inicio'});
+      send({cmd: 'exRun', id});
+      const started = await waitFor(() => RUN.abort || cur().exActive, 10000);
+      if (!started) { toast('La prueba ' + (k + 1) + ' no arrancó: revisa los rodillos'); break; }
+      await waitFor(() => RUN.abort || !cur().exActive, 300000);
+      send({cmd: 'marca', texto: 'P' + k + ' fin'});
+    }
+  } finally { RUN.active = false; }
+  $('proto-txt').textContent = RUN.abort ? 'Protocolo detenido' : 'Protocolo terminado: descarga los registros';
+  toast(RUN.abort ? 'Protocolo detenido' : 'Protocolo terminado');
+}
+
+// ---- 2.7: prueba de efecto para el vídeo: 6 bolas, misma velocidad media (2200 RPM), tres intensidades ----
+const EFECTO_STEPS = [['b','suave',6],['b','medio',9],['b','fuerte',12],['t','suave',6],['t','medio',9],['t','fuerte',12]];
+async function runEfecto() {   // 2.8: espera "Listo" antes de cada bola, cuenta 3-2-1 y lanza
+  if (sim) return toast('La prueba necesita el robot conectado');
+  if (RUN.active) return toast('Ya hay una prueba en marcha');
+  if (!confirm('Prueba de efecto: 6 bolas. Cuando la cámara esté grabando, pulsa "Lanzar bola" para cada una. Las bolas salen solo cuando tú pulsas. ¿Continuar?')) return;
+  RUN = {abort: false, active: true, label: 'Efecto', idx: 0, total: 6};
+  const esperarListo = () => new Promise(res => {
+    const b = $('ef-listo'); let t = null;
+    const fin = ok => { clearInterval(t); b.style.display = 'none'; b.onclick = null; res(ok); };
+    b.style.display = ''; b.onclick = () => fin(true);
+    t = setInterval(() => { if (RUN.abort) fin(false); }, 200);
+  });
+  try {
+    send({cmd: 'rollersOn'});
+    for (let k = 0; k < EFECTO_STEPS.length && !RUN.abort; k++) {
+      const [ek, ni, dm] = EFECTO_STEPS[k];
+      const dr = Math.round(dm / 0.003625), m = 2200;
+      const bs = Math.round((ek === 'b' ? m + dr / 2 : m - dr / 2) / 10) * 10;
+      const ts = Math.round((ek === 'b' ? m - dr / 2 : m + dr / 2) / 10) * 10;
+      const nom = ek === 'b' ? 'backspin' : 'topspin';
+      $('ef-txt').textContent = `Bola ${k + 1} de 6: ${nom} ${ni}. Preparando los rodillos (backspin ${bs}, topspin ${ts})…`;
+      send({cmd: 'setRPM', motor: 'backspin', value: bs}); send({cmd: 'setRPM', motor: 'topspin', value: ts});
+      await waitFor(() => RUN.abort || rollersReady(cur()), 20000);
+      if (RUN.abort) break;
+      send({cmd: 'marca', texto: `EFECTO ${k + 1}/6 ${nom} ${ni} · back ${bs} top ${ts}`});
+      $('ef-txt').textContent = `Bola ${k + 1} de 6 lista (${nom} ${ni}). Cuando la cámara esté grabando, pulsa "Lanzar bola".`;
+      $('ef-listo').textContent = `Lanzar bola ${k + 1} de 6`;
+      const ok = await esperarListo();
+      if (!ok || RUN.abort) break;
+      for (const n of [3, 2, 1]) {
+        $('ef-txt').textContent = `Graba ahora: ${n}`;
+        await sleep(1000);
+        if (RUN.abort) break;
+      }
+      if (RUN.abort) break;
+      $('ef-txt').textContent = `¡Lanza! Bola ${k + 1} de 6: ${nom} ${ni}.`;
+      send({cmd: 'launchOne', pos: 'C'});
+      await sleep(6000);
+    }
+  } finally { RUN.active = false; $('ef-listo').style.display = 'none'; send({cmd: 'stopAll'}); }
+  $('ef-txt').textContent = RUN.abort ? 'Prueba detenida' : 'Prueba terminada. Descarga los registros: las marcas EFECTO indican cada bola.';
+  toast(RUN.abort ? 'Prueba detenida' : 'Prueba de efecto terminada');
+}
+// ---- 1.23: pruebas de escalones y de arranque, con marcas en el registro ----
+const ESCALONES = [
+  {n: 'E1', de: [2750, 700], a: [4250, 700]}, {n: 'E2', de: [2750, 700], a: [3500, 700]},
+  {n: 'E3', de: [4250, 700], a: [2750, 700]}, {n: 'E4', de: [2750, 700], a: [2750, 1500]},
+  {n: 'E5', de: [2750, 700], a: [2750, 2750]}, {n: 'E6', de: [2750, 2750], a: [2750, 700]}];
+async function runEscalones() {
+  if (sim) return toast('Las pruebas necesitan el robot conectado');
+  if (RUN.active) return toast('Ya hay una prueba en marcha');
+  if (!confirm('Los rodillos girarán SIN bolas en 6 escalones de RPM. PARAR TODO detiene la prueba. ¿Continuar?')) return;
+  RUN = {abort: false, active: true, label: 'Escalones', idx: 0, total: ESCALONES.length};
+  try {
+    send({cmd: 'rollersOn'});
+    for (let k = 0; k < ESCALONES.length && !RUN.abort; k++) {
+      const s = ESCALONES[k];
+      $('proto-txt').textContent = 'Escalón ' + s.n + ' (' + (k + 1) + ' de ' + ESCALONES.length + ')';
+      send({cmd: 'setRPM', motor: 'backspin', value: s.de[0]}); send({cmd: 'setRPM', motor: 'topspin', value: s.de[1]});
+      await waitFor(() => RUN.abort || rollersReady(cur()), 20000);
+      send({cmd: 'marca', texto: s.n + ' inicio'});
+      send({cmd: 'setRPM', motor: 'backspin', value: s.a[0]}); send({cmd: 'setRPM', motor: 'topspin', value: s.a[1]});
+      await waitFor(() => RUN.abort || rollersReady(cur()), 20000);
+      await sleep(5000);   // 5 s en régimen
+      send({cmd: 'marca', texto: s.n + ' fin'});
+    }
+  } finally { RUN.active = false; }
+  $('proto-txt').textContent = RUN.abort ? 'Escalones detenidos' : 'Escalones terminados: descarga los registros';
+  toast(RUN.abort ? 'Escalones detenidos' : 'Escalones terminados');
+}
+// Reproduce el caso de bolas de más: serie de 3 bolas en frío y luego cambio de perfil con los rodillos girando.
+async function runFrio() {
+  if (sim) return toast('Las pruebas necesitan el robot conectado');
+  if (RUN.active) return toast('Ya hay una prueba en marcha');
+  if (!confirm('Se detienen los rodillos, se hace una serie de 3 bolas en frío, luego se cambia de perfil y se observan 8 s. Hay que tener bolas en el suministro. ¿Continuar?')) return;
+  RUN = {abort: false, active: true, label: 'Arranque', idx: 0, total: 1};
+  try {
+    send({cmd: 'stopAll'}); await sleep(4000);
+    send({cmd: 'marca', texto: 'FRIO inicio'});
+    send({cmd: 'rollersOn'});
+    send({cmd: 'trainConfig', delay: 1.6, count: 3, interval: 1.0, pos: 'C', preset: PROF('bs').preset});
+    await sleep(300);
+    send({cmd: 'trainStart'});
+    await sleep(800);
+    await waitFor(() => RUN.abort || !cur().trainActive, 60000);
+    send({cmd: 'marca', texto: 'FRIO serie terminada'});
+    if (!RUN.abort) {
+      await sleep(1000);
+      send({cmd: 'marca', texto: 'CAMBIO perfil con rodillos girando'});
+      send({cmd: 'preset', name: PROF('ns').preset});
+      await sleep(8000);
+      send({cmd: 'marca', texto: 'CAMBIO perfil fin'});
+    }
+  } finally { RUN.active = false; send({cmd: 'stopAll'}); }
+  $('proto-txt').textContent = RUN.abort ? 'Prueba detenida' : 'Prueba terminada: descarga los registros';
+  toast(RUN.abort ? 'Prueba detenida' : 'Prueba terminada');
+}
+
+// ---- Sonido y vibración al pulsar (WebAudio: el primer toque activa el audio) ----
+let AC = null;
+function tone(freq, ms, vol) {
+  try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); const o = AC.createOscillator(), g = AC.createGain();
+    o.frequency.value = freq; g.gain.value = vol || 0.12; o.connect(g); g.connect(AC.destination); o.start(); o.stop(AC.currentTime + ms / 1000); } catch (_) {}
+}
+function feedback(act) {
+  if (act === 'trlaunch' || act === 'serie') { tone(1046, 90, 0.2); setTimeout(() => tone(1318, 120, 0.2), 110); if (navigator.vibrate) navigator.vibrate([30, 40, 30]); }
+  else if (act === 'stop' || act === 'serieStop' || act === 'trstop') { tone(330, 160, 0.18); if (navigator.vibrate) navigator.vibrate(60); }
+  else { tone(880, 45, 0.08); if (navigator.vibrate) navigator.vibrate(12); }
+}
+
+// ---- Descarga con fecha y hora en el nombre ----
+async function dlCsv(path, base) {
+  if (sim) return toast('Sin robot: no hay registros que descargar');
+  try {
+    const r = await fetch(path); const b = await r.blob(); const d = new Date(); const p = n => String(n).padStart(2, '0');
+    const stamp = d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + '_' + p(d.getHours()) + '-' + p(d.getMinutes());
+    const u = URL.createObjectURL(b); const a = document.createElement('a');
+    a.href = u; a.download = base + '_' + stamp + '.csv'; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(u), 2000);
+  } catch (_) { toast('No se pudo descargar del robot'); }
+}
+
+// ---- ESTADÍSTICAS ----
+let STAT = {ev: null, mu: null};
+function parseCsv(txt) {
+  const L = txt.trim().split(/\r?\n/); const h = L[0].split(',');
+  return L.slice(1).filter(Boolean).map(l => { const c = l.split(','); const o = {}; h.forEach((k, i) => o[k] = c[i]); return o; });
+}
+async function statLoad() {
+  if (sim) return toast('En simulación no hay registros reales: carga archivos');
+  try {
+    const [a, b] = await Promise.all([fetch('/registros/eventos.csv'), fetch('/registros/muestras.csv')]);
+    STAT.ev = parseCsv(await a.text()); STAT.mu = parseCsv(await b.text()); statCompute();
+  } catch (_) { toast('No se pudo leer los registros del robot'); }
+}
+function statFile(kind, file) { file.text().then(t => { STAT[kind] = parseCsv(t); statCompute(); }); }
+const mean = a => a.length ? a.reduce((s, x) => s + x, 0) / a.length : NaN;
+const sdev = a => { if (a.length < 2) return 0; const m = mean(a); return Math.sqrt(a.reduce((s, x) => s + (x - m) * (x - m), 0) / (a.length - 1)); };
+function histo(vals, lo, step, n) { const c = new Array(n).fill(0); vals.forEach(v => { const k = Math.floor((v - lo) / step); if (k >= 0 && k < n) c[k]++; }); return c; }
+function statCompute() {
+  const ev = STAT.ev || [], mu = STAT.mu || [];
+  const bolas = ev.filter(r => r.tipo === 'bola');
+  const disp = ev.filter(r => r.tipo === 'entreno' && r.detalle === 'disparo').map(r => +r.t_ms);
+  const inicios = ev.filter(r => r.tipo === 'entreno' && r.detalle === 'inicio');
+  const sinBola = ev.filter(r => r.detalle === 'sin bola').length;
+  const espac = []; for (let i = 1; i < disp.length; i++) { const d = (disp[i] - disp[i - 1]) / 1000; if (d > 0.2 && d < 5) espac.push(d); }
+  const lat = bolas.map(b => { const t = +b.t_ms; let last = null; for (const d of disp) { if (d <= t) last = d; else break; } return last !== null && t - last < 3000 ? t - last : null; }).filter(x => x !== null);
+  const vel = bolas.map(b => +b.valor2 / 10).filter(v => v > 0);
+  const retardo = [], retCfg = [];
+  inicios.forEach((r, k) => { const t0 = +r.t_ms, t1 = k + 1 < inicios.length ? +inicios[k + 1].t_ms : Infinity; const f = disp.find(d => d >= t0 && d < t1); if (f !== undefined) { retardo.push((f - t0) / 1000); retCfg.push(+r.valor1 / 1000); } });
+  const bs = mu.map(m => ({t: +m.t_ms, sp: +m.bs_sp_rpm, r: +m.bs_rpm})), ts = mu.map(m => ({t: +m.t_ms, sp: +m.ts_sp_rpm, r: +m.ts_rpm}));
+  const errB = bs.filter(x => x.sp > 0).map(x => (x.r - x.sp) / x.sp * 100), errT = ts.filter(x => x.sp > 0).map(x => (x.r - x.sp) / x.sp * 100);
+  const f1 = n => isNaN(n) ? '—' : n.toFixed(1), f2 = n => isNaN(n) ? '—' : n.toFixed(2);
+  $('st-sum').innerHTML = `<div class="h">Resumen</div>
+    <div class="grid2"><div><div class="mut">Series</div><div class="val">${inicios.length}</div></div><div><div class="mut">Bolas detectadas</div><div class="val">${bolas.length}</div></div>
+    <div><div class="mut">Sin bola</div><div class="val">${sinBola}</div></div><div><div class="mut">Disparos</div><div class="val">${disp.length}</div></div>
+    <div><div class="mut">Retardo real (s)</div><div class="val">${f2(mean(retardo))}</div><div class="mut">configurado ${f2(mean(retCfg))}</div></div>
+    <div><div class="mut">Intervalo entre disparos (s)</div><div class="val">${f2(mean(espac))}</div><div class="mut">± ${f2(sdev(espac))}</div></div>
+    <div><div class="mut">Latencia disparo → bola (ms)</div><div class="val">${f1(mean(lat))}</div><div class="mut">± ${f1(sdev(lat))}</div></div>
+    <div><div class="mut">Velocidad bola (m/s)</div><div class="val">${f2(mean(vel))}</div><div class="mut">± ${f2(sdev(vel))}</div></div>
+    <div><div class="mut">Error RPM backspin</div><div class="val">${f1(mean(errB))} %</div></div>
+    <div><div class="mut">Error RPM topspin</div><div class="val">${f1(mean(errT))} %</div></div></div>`;
+  // Bolas acumuladas (minutos)
+  drawLine('ch-acum', [{x: bolas.map(b => +b.t_ms / 60000), y: bolas.map((_, i) => i + 1), c: '#4da3ff'}], 'minutos', 'bolas');
+  // Histogramas
+  drawBars('ch-int', espac.length ? histo(espac, 0.8, 0.1, 14) : [0], 0.8, 0.1, 'intervalo (s)', '#2ecc71');
+  drawBars('ch-lat', lat.length ? histo(lat, 0, 100, 20) : [0], 0, 100, 'latencia (ms)', '#f5a623');
+  drawBars('ch-vel', vel.length ? histo(vel, 3, 0.25, 24) : [0], 3, 0.25, 'm/s', '#c084fc');
+  // RPM real frente a consigna
+  const t0 = mu.length ? +mu[0].t_ms : 0;
+  drawLine('ch-rpm', [
+    {x: bs.map(x => (x.t - t0) / 60000), y: bs.map(x => x.r), c: '#4da3ff'},
+    {x: bs.map(x => (x.t - t0) / 60000), y: bs.map(x => x.sp), c: '#4da3ff', dash: true},
+    {x: ts.map(x => (x.t - t0) / 60000), y: ts.map(x => x.r), c: '#f5a623'},
+    {x: ts.map(x => (x.t - t0) / 60000), y: ts.map(x => x.sp), c: '#f5a623', dash: true}], 'minutos', 'RPM');
+}
+function fitCanvas(cv) {
+  const dpr = window.devicePixelRatio || 1, w = cv.clientWidth || 340, hh = cv.clientHeight || 180;
+  cv.width = w * dpr; cv.height = hh * dpr; const g = cv.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  g.fillStyle = '#0e1826'; g.fillRect(0, 0, w, hh); return {g, w, h: hh};
+}
+function drawLine(id, series, xl, yl) {
+  const cv = $(id); if (!cv || !cv.getContext) return;
+  const {g, w, h} = fitCanvas(cv); const pad = 34;
+  const xs = series.flatMap(s => s.x), ys = series.flatMap(s => s.y);
+  if (!xs.length) { g.fillStyle = '#9fb0c4'; g.fillText('Sin datos', pad, h / 2); return; }
+  const x0 = Math.min(...xs), x1 = Math.max(...xs) || 1, y0 = Math.min(0, ...ys), y1 = Math.max(...ys) || 1;
+  const X = x => pad + (x - x0) / (x1 - x0 || 1) * (w - pad - 8), Y = y => h - 22 - (y - y0) / (y1 - y0 || 1) * (h - 34);
+  g.strokeStyle = '#2c3e55'; g.beginPath(); g.moveTo(pad, 8); g.lineTo(pad, h - 22); g.lineTo(w - 8, h - 22); g.stroke();
+  g.fillStyle = '#9fb0c4'; g.font = '11px system-ui'; g.fillText(Math.round(y1), 2, 14); g.fillText(Math.round(y0), 2, h - 24); g.fillText(xl, w - 70, h - 6);
+  series.forEach(s => { g.strokeStyle = s.c; g.setLineDash(s.dash ? [5, 4] : []); g.lineWidth = 2; g.beginPath();
+    s.x.forEach((x, i) => { const px = X(x), py = Y(s.y[i]); i ? g.lineTo(px, py) : g.moveTo(px, py); }); g.stroke(); });
+  g.setLineDash([]);
+}
+function drawBars(id, counts, lo, step, xl, color) {
+  const cv = $(id); if (!cv || !cv.getContext) return;
+  const {g, w, h} = fitCanvas(cv); const pad = 30, mx = Math.max(1, ...counts), bw = (w - pad - 8) / counts.length;
+  counts.forEach((c, i) => { const bh = c / mx * (h - 40); g.fillStyle = color; g.fillRect(pad + i * bw + 1, h - 22 - bh, bw - 2, bh); });
+  g.fillStyle = '#9fb0c4'; g.font = '11px system-ui'; g.fillText(mx, 2, 14); g.fillText(xl + ' desde ' + lo + ' · paso ' + step, pad, h - 6);
+}
+
+// ---- Navegación y acciones (un solo manejador) ----
+function goTab(t) { view = t; location.hash = t; render(); if (t === 'ejercicios') refreshEx(); }
+document.addEventListener('click', async e => {
+  const el = e.target.closest('[data-act]');
+  if (!el) return;
+  const a = el.dataset.act;
+  if (!el.disabled) feedback(a);
+  if (a === 'tab') return goTab(el.dataset.tab);
+  if (a === 'stop') { RUN.abort = true; send({cmd: 'stopAll'}); return toast('Todo detenido'); }
+  if (a === 'profile') { profileId = el.dataset.id; send({cmd: 'preset', name: PROF(profileId).preset}); return render(); }
+  if (a === 'pos') { pos = el.dataset.p; if (pos !== 'X') send({cmd: 'servoTest', pos: pos}); return render(); }
+  if (a === 'fs') { const v = clamp(Math.round((cur().feederSeconds + +el.dataset.d) * 10) / 10, 0.5, 6); return send({cmd: 'setFeederSeconds', motor: 'feeder', value: v}); }
+  if (a === 'roll') return rollersRunning(cur()) ? send({cmd: 'stopAll'}) : send({cmd: 'rollersOn'});
+  if (a === 'launch') return send({cmd: 'launchOne', pos: resolvePos(pos)});
+  if (a === 'sweep') { const X = cur(); return X.sweep ? send({cmd: 'sweepStop'}) : send({cmd: 'sweepStart', value: SWEEP_SEG}); }
+  if (a === 'tc') return send({cmd: 'testComp', comp: el.dataset.c, on: +el.dataset.on, pct: +($('tc-pct').value || 30), enc: $('tc-enc').checked ? 1 : 0, pid: $('tc-pid').checked ? 1 : 0});   // 4.7
+  if (a === 'msgs') return showMsgs();   // 4.8
+  if (a === 'exfirst') { const f = EDIT.ex.balls[0]; EDIT.ex.balls.forEach((b, i) => { if (i > 0) { b.perfil = f.perfil; b.pos = f.pos; } }); return renderEx(); }   // 4.9
+  if (a === 'exbulk') { const v = $('bulk-prof').value; EDIT.ex.balls.forEach(b => b.perfil = v); return renderEx(); }   // 4.8: cambio masivo
+  if (a === 'swStep') { const lo = +$('sw-lo').value, hi = +$('sw-hi').value; const d = +el.dataset.d; const nlo = el.dataset.k === 'lo' ? lo + d : lo, nhi = el.dataset.k === 'hi' ? hi + d : hi; return send({cmd: 'sweepRange', lo: nlo, hi: nhi}); }   // 3.6
+  if (a === 'swApply') return send({cmd: 'sweepRange', lo: +$('sw-lo').value, hi: +$('sw-hi').value});   // 3.6
+  if (a === 'sweepStep') { SWEEP_SEG = clamp(Math.round((SWEEP_SEG + +el.dataset.d) * 10) / 10, 2, 30); save('spm_sweep', SWEEP_SEG); if (cur().sweep) send({cmd: 'sweepStart', value: SWEEP_SEG}); return render(); }   // 2.14: el cambio de segundos se aplica al momento
+  if (a === 'sesionStart') { PR = {min: clamp(parseInt($('pr-min').value) || 0, 0, 240), series: clamp(parseInt($('pr-series').value) || 1, 1, 20), balls: clamp(parseInt($('pr-balls').value) || 1, 1, 200), rest: clamp(parseInt($('pr-rest').value) || 0, 0, 600)}; save('spm_pr', PR); return send({cmd: 'sesionStart', minutes: PR.min, series: PR.series, balls: PR.balls, rest: PR.rest, pos: $('pr-pos').value}); }   // 2.16
+  if (a === 'sesionStop') return send({cmd: 'sesionStop'});
+  if (a === 'offsave') { (cur().progOff || []).forEach((_, i) => { const v = clamp(parseInt($('off-' + i).value) || 0, -15, 15); send({cmd: 'setProgOffset', index: i, value: v}); }); return toast('Puntos de caída guardados'); }
+  if (a === 'protocolo') return runProtocol();
+  if (a === 'efecto') return runEfecto();   // 2.7
+  if (a === 'prueba') { const v = $('prueba-sel').value; return v === 'protocolo' ? runProtocol() : v === 'escal' ? runEscalones() : runFrio(); }   // 1.26
+  if (a === 'invrot') { if (!confirm('Invertir el giro de ' + el.dataset.m + '. Solo con el rodillo detenido. ¿Continuar?')) return; return send({cmd: 'invert', motor: el.dataset.m}); }   // 2.0
+  if (a === 'feedrev') { const nuevo = cur().feedRev ? 0 : 1; return send({cmd: 'feedRev', value: nuevo}); }   // 2.0: el suministro cambia de sentido hasta el siguiente cambio
+  if (a === 'resetcount') { if (!confirm('¿Poner la cuenta de bolas en cero?')) return; return send({cmd: 'resetCount'}); }   // 2.0
+  if (a === 'statsreset') { if (!confirm('¿Borrar las estadísticas de hoy y el total?')) return; return send({cmd: 'statsReset'}); }   // 1.26
+  if (a === 'tune') return stepTune(el.dataset.k, +el.dataset.d);   // 1.23
+  if (a === 'escal') return runEscalones();   // 1.23
+  if (a === 'frio') return runFrio();   // 1.23
+  if (a === 'calibone') { const n = clamp(parseInt($('calib-n').value) || 10, 3, 20); return runCalibracion(el.dataset.id, n); }
+  if (a === 'calibcsv') return calibDescargar();
+  if (a === 'dlcsv') return dlCsv(el.dataset.path, el.dataset.base);
+  if (a === 'statload') return statLoad();
+  if (a === 'statclear') { STAT = {ev: null, mu: null}; ['st-ev','st-mu'].forEach(id => { $(id).value = ''; }); $('st-sum').innerHTML = '<div class="mut center">Sin datos.</div>'; return; }
+  // Serie por cantidad (Libre)
+  if (a === 'serieStep') { SERIE_N = clamp(SERIE_N + +el.dataset.d, 0, 99); save('spm_serie', SERIE_N); return render(); }
+  if (a === 'serie') { send({cmd: 'resetCount'}); send({cmd: 'setStopAt', value: SERIE_N}); send({cmd: 'feedOn'}); return toast(SERIE_N ? 'Serie de ' + SERIE_N + ' bolas' : 'Serie sin límite: pulsa DETENER SERIE para parar'); }
+  if (a === 'serieStop') return send({cmd: 'stopFeed'});
+  // Perfiles y plantillas
+  if (a === 'profsave') { const X = cur(); (X.presets || []).forEach((p, i) => { const b = clamp(parseInt($('pf-b-' + i).value) || 0, 0, 6000), t = clamp(parseInt($('pf-t-' + i).value) || 0, 0, 6000); send({cmd: 'setPreset', index: i, backRpm: b, topRpm: t}); }); return toast('Perfiles guardados en el robot'); }
+  if (a === 'tplcopy') { const t = TEMPLATES.find(x => x.id === el.dataset.id); EDIT = {ex: tplToEx(t), i: 0}; exMode = 'edit'; const ok = await exSave(EDIT.ex); if (ok) toast('Copia guardada: ya puedes editarla'); return renderEx(); }
+  // Ejercicios
+  if (a === 'exfilter') { exFilter = el.dataset.f; return renderEx(); }
+  if (a === 'exnew') { EDIT = {ex: {id: uid(), name: 'Nuevo ejercicio', fav: false, balls: [{perfil: 'n_la', pos: 'C', pausa: 0, reps: 1, disp: 0, saque: false}]}, i: 0}; exMode = 'edit'; return renderEx(); }
+  if (a === 'exopen') { const ex = await api.get(el.dataset.id); if (!ex || ex.error) return toast('No se pudo abrir el ejercicio'); EDIT = {ex: JSON.parse(JSON.stringify(ex)), i: 0}; exMode = 'edit'; return renderEx(); }
+  if (a === 'tplopen') { exTpl = el.dataset.id; exMode = 'tpl'; return renderEx(); }
+  if (a === 'libopen') { const x = LIB.find(e => e.id === el.dataset.id); const saved = EX.find(e => e.id === x.id); const ex = saved ? await api.get(x.id) : libExFrom(x); EDIT = {ex: JSON.parse(JSON.stringify(ex && !ex.error ? ex : libExFrom(x))), i: 0, libId: x.id, libInfo: x}; exMode = 'edit'; return renderEx(); }
+  if (a === 'libcopy') { const x = LIB.find(e => e.id === el.dataset.id); const ok = await exSave(libExFrom(x)); if (ok) toast('Copiado a mis ejercicios'); return; }
+  if (a === 'libreset') { const x = LIB.find(e => e.id === el.dataset.id); if (!confirm('¿Volver a la versión original de la biblioteca?')) return; await api.del(x.id); toast('Restaurado'); exMode = 'list'; EDIT = null; await refreshEx(); return renderEx(); }
+  if (a === 'librun') { const x = LIB.find(e => e.id === el.dataset.id); const ex = libExFrom(x); if (!(await exSave(ex))) return; if (sim) return toast('En simulación se copia, no se ejecuta'); send({cmd: 'exRun', id: ex.id, repeat: ex.rep ?? 2}); return toast('Ejecutando: ' + x.name); }
+  if (a === 'tplrun') { const t = TEMPLATES.find(x => x.id === el.dataset.id); if (t.seq) send({cmd: 'sequence', name: t.seq}); else send({cmd: 'program', id: t.prog}); return toast('Ejecutando: ' + t.name); }
+  if (a === 'exback') { exMode = 'list'; EDIT = null; refreshEx(); return renderEx(); }
+  if (a === 'exball') { EDIT.i = +el.dataset.i; return renderEx(); }
+  if (a === 'exadd') { const last = EDIT.ex.balls[EDIT.i]; EDIT.ex.balls.push({...last}); EDIT.i = EDIT.ex.balls.length - 1; return renderEx(); }
+  if (a === 'exdelball') { EDIT.ex.balls.splice(EDIT.i, 1); EDIT.i = clamp(EDIT.i, 0, EDIT.ex.balls.length - 1); return renderEx(); }
+  if (a === 'exfav') { EDIT.ex.fav = !EDIT.ex.fav; return renderEx(); }
+  if (a === 'saque') { const b = EDIT.ex.balls[EDIT.i]; b.saque = !b.saque; return renderEx(); }
+  if (a === 'exstep') { const ex = EDIT.ex, k = el.dataset.k, d = +el.dataset.d;   // 2.5
+    if (k === 'rep') ex.rep = clamp((ex.rep ?? 2) + d, 0, 99);
+    else ex.ivGlobal = clamp(Math.round(((ex.ivGlobal ?? 0) + d) * 10) / 10, 0, 6);
+    return renderEx(); }
+  if (a === 'step') { const b = EDIT.ex.balls[EDIT.i], k = el.dataset.k, d = +el.dataset.d;
+    if (k === 'pausa') b.pausa = clamp(Math.round((b.pausa + d) * 10) / 10, 0, 4);
+    if (k === 'reps') b.reps = clamp(b.reps + d, 1, 10);
+    if (k === 'disp') b.disp = clamp(b.disp + d, 0, 10);
+    if (k === 'intervalo') b.intervalo = clamp(Math.round(((b.intervalo || 0) + d) * 10) / 10, 0, 6);
+    return renderEx(); }
+  if (a === 'exsave') { const ex = EDIT.ex; if (ex.name.trim() === '') ex.name = 'Sin nombre'; return exSave(ex); }
+  if (a === 'exclone') { const c = JSON.parse(JSON.stringify(EDIT.ex)); c.id = uid(); c.name += ' (copia)'; EDIT = {ex: c, i: 0}; return renderEx(); }
+  if (a === 'exdel') { if (!confirm('¿Eliminar este ejercicio del robot?')) return; const r = await api.del(EDIT.ex.id); if (r && r.error) return toast(r.error); toast('Eliminado'); exMode = 'list'; EDIT = null; await refreshEx(); return renderEx(); }
+  if (a === 'exprobe') {
+    if (!sim && !rollersRunning(cur())) { send({cmd: 'rollersOn'}); toast('Encendiendo rodillos...'); }
+    if (!sim) await waitFor(() => rollersReady(cur()), 15000);
+    if (!sim && !rollersReady(cur())) return toast('Los rodillos no llegaron a la velocidad');
+    return runSteps(exSteps(EDIT.ex, true), 'bola ' + (EDIT.i + 1));
+  }
+  if (a === 'calccalc') return calcularUI();
+  if (a === 'calcgo') return calcGo();
+  if (a === 'calcusar') return calcUsar();
+  if (a === 'dragstep') { const id = el.dataset.id; calcSetVal(id, CALCUI[id] + (+el.dataset.d)); return; }
+  if (a === 'regdl') return regDescargar(el.dataset.key);
+  if (a === 'regborrar') return regBorrar();
+  if (a === 'exrun') { const ex = EDIT.ex; if (!(await exSave(ex))) return; if (sim) return runSteps(exSteps(ex, false), ex.name); send({cmd: 'exRun', id: ex.id, repeat: ex.rep ?? 2}); return toast('Ejercicio en marcha en el robot'); }
+  if (a === 'expause') return send({cmd: 'exPause'});
+  if (a === 'exresume') return send({cmd: 'exResume'});
+  if (a === 'exstopses') { RUN.abort = true; return send({cmd: 'exStop'}); }
+  if (a === 'exporttodo') return;
+  if (a === 'exexport') { const blob = new Blob([JSON.stringify(EDIT.ex, null, 2)], {type: 'application/json'}); const u = URL.createObjectURL(blob); const l = document.createElement('a'); l.href = u; l.download = (EDIT.ex.name || 'ejercicio') + '.json'; l.click(); return; }
+  if (a === 'eximport') return $('ex-file').click();
+  // Tercera bola
+  if (a === 'trmode') { TR.mode = el.dataset.m; save('spm_tr2', TR); return renderTercera(); }
+  if (a === 'trstep') { const k = el.dataset.k, d = +el.dataset.d;
+    if (k === 'delay') TR.delay = clamp(Math.round((TR.delay + d) * 10) / 10, 0, 600);
+    if (k === 'count') TR.count = clamp(TR.count + d, 1, 99);
+    if (k === 'int') TR.int = clamp(Math.round((TR.int + d) * 10) / 10, 0.5, 6);
+    save('spm_tr2', TR); trSend(); return renderTercera(); }
+  if (a === 'trpos') { TR.pos = el.dataset.p; save('spm_tr2', TR); trSend(); return renderTercera(); }
+  if (a === 'trlaunch') {
+    if (TR.mode === 'sec') return runSecuencia();
+    if (TR.mode === 'manual') { trSend(); return send({cmd: 'trainStart', delay: TR.delay, count: TR.count, interval: TR.int, pos: TR.pos, preset: PROF(TR.profile).preset}); }
+    return send({cmd: 'launchOne', pos: TR.pos});
+  }
+  if (a === 'trstop') { RUN.abort = true; return send({cmd: 'trainStop'}); }
+  if (a === 'seqpreset') { TR.seq = [{perfil:'bs', off:1.7, nw:false}, {perfil:'ns', off:1.2, nw:true}, {perfil:'ts', off:2.1, nw:true}]; save('spm_tr2', TR); toast('Preset cargado: backspin suave 1.7 s, muerta 1.2 s, topspin suave 2.1 s'); return renderTercera(); }
+  if (a === 'seqadd') { TR.seq.push({perfil: 'ts', off: 1.0, nw: true}); save('spm_tr2', TR); return renderTercera(); }
+  if (a === 'seqdel') { if (TR.seq.length > 1) TR.seq.splice(+el.dataset.i, 1); save('spm_tr2', TR); return renderTercera(); }
+  if (a === 'seqoff') { const s = TR.seq[+el.dataset.i]; s.off = clamp(Math.round((s.off + +el.dataset.d) * 10) / 10, 0, 60); save('spm_tr2', TR); return renderTercera(); }
+  if (a === 'seqnw') { const s = TR.seq[+el.dataset.i]; s.nw = !s.nw; save('spm_tr2', TR); return renderTercera(); }
+  // Ajustes
+  if (a === 'angopen') { angEdit = el.dataset.p; return renderAjustes(); }
+  if (a === 'angtest') return send({cmd: 'servoTest', pos: angEdit});
+  if (a === 'angsave') { const v = clamp(parseInt($('ang-val').value) || 0, 0, 180); send({cmd: 'setServoAngle', pos: angEdit, value: v}); angEdit = null; return toast('Ángulo guardado'); }
+  if (a === 'calsave') { CAL.maxRpm = clamp(parseInt($('cal-max').value) || 4500, 1000, 6000); save('spm_cal', CAL); send({cmd: 'setCalMax', value: CAL.maxRpm}); return toast('RPM máxima enviada al robot'); }
+  if (a === 'autooff') { const m = clamp(parseInt($('auto-off').value) || 0, 0, 240); return send({cmd: 'setAutoOff', value: m}); }
+  if (a === 'wifi') {
+    const ssid = $('wf-ssid').value.trim(), pass = $('wf-pass').value;
+    if (ssid.length < 1 || ssid.length > 31 || pass.length < 8 || pass.length > 63) return toast('Nombre de 1 a 31 caracteres y contraseña de 8 a 63');
+    if (!confirm('El robot se reiniciará y la red cambiará a "' + ssid + '". ¿Continuar?')) return;
+    return send({cmd: 'setWifi', ssid, pass});
+  }
+  if (a === 'nb') return send({cmd: 'setNoBallStop', value: !cur().noBallStop});
+  if (a === 'clearlogs') { if (confirm('¿Borrar todos los registros del robot?')) send({cmd: 'clearLogs'}); return; }
+  if (a === 'sim') { sim = !sim; save('spm_sim', sim); connect(); refreshEx(); return render(); }
+});
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (t.id === 'ex-q') { exQuery = t.value; renderEx(); return; }
+  // 2.3: nombre y campos del ejercicio se guardan en memoria al escribir, sin redibujar el editor
+  if (t.id === 'ex-name' && EDIT) EDIT.ex.name = t.value;
+  if (t.dataset && t.dataset.field && EDIT && EDIT.ex.balls[+t.dataset.i]) {
+    EDIT.ex.balls[+t.dataset.i][t.dataset.field] = ['bsRpm','tsRpm'].includes(t.dataset.field) ? (parseInt(t.value) || 0) : t.value;
+  }
+});
+document.addEventListener('change', e => {
+  const t = e.target;
+  if (t.id === 'ex-name' && EDIT) EDIT.ex.name = t.value || 'Sin nombre';
+  if (t.dataset.field && EDIT) EDIT.ex.balls[+t.dataset.i][t.dataset.field] = ['bsRpm','tsRpm'].includes(t.dataset.field) ? (parseInt(t.value) || 0) : t.value;
+  if (t.id === 'tr-profile') { TR.profile = t.value; save('spm_tr2', TR); trSend(); send({cmd: 'preset', name: PROF(TR.profile).preset}); if (!rollersRunning(cur())) send({cmd: 'rollersOn'}); return render(); }
+  if (t.dataset && t.dataset.seqf !== undefined) { TR.seq[+t.dataset.i].perfil = t.value; save('spm_tr2', TR); return renderTercera(); }
+  if (t.id && t.id.startsWith('pr-')) { PR = {min: clamp(parseInt($('pr-min').value) || 0, 0, 240), series: clamp(parseInt($('pr-series').value) || 1, 1, 20), balls: clamp(parseInt($('pr-balls').value) || 1, 1, 200), rest: clamp(parseInt($('pr-rest').value) || 0, 0, 600)}; save('spm_pr', PR); }
+  if ((t.id === 'st-ev' || t.id === 'st-mu') && t.files && t.files[0]) statFile(t.id === 'st-ev' ? 'ev' : 'mu', t.files[0]);
+  if (t.id === 'ex-file' && t.files && t.files[0]) {
+    t.files[0].text().then(async txt => {
+      try { const ex = JSON.parse(txt); ex.id = uid(); EDIT = {ex, i: 0}; exMode = 'edit'; toast('Importado: revisa y guarda en el robot'); renderEx(); }
+      catch (_) { toast('Archivo no válido'); }
+    });
+  }
+});
+window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if (['libre','ejercicios','tercera','calc','ajustes'].includes(h)) { view = h; render(); } });
+(function init() {
+  const h = location.hash.slice(1) || (location.pathname.includes('tercera') ? 'tercera' : location.pathname.includes('programas') ? 'ejercicios' : 'libre');
+  view = ['libre','ejercicios','tercera','calc','ajustes'].includes(h) ? h : 'libre';
+  connect();
+  refreshEx();
+  render();
+})();
+</script>
+</body>
+</html>
+
